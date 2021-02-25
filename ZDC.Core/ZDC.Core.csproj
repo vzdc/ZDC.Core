@@ -1,12 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>f3b51714-ca81-4316-96fa-41aa8c25e498</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.3" />
+	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.3" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9">
 		<PrivateAssets>all</PrivateAssets>

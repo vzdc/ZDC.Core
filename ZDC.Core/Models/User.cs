@@ -6,6 +6,18 @@ namespace ZDC.Core.Models
 {
     public class User
     {
+        public User()
+        {
+            Certifications = new Certification
+            {
+                Ground = 0,
+                Tower = 0,
+                Approach = 0,
+                Center = 0,
+                Updated = DateTime.UtcNow
+            };
+        }
+
         [Key] public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -17,7 +29,8 @@ namespace ZDC.Core.Models
         public Certification Certifications { get; set; }
         public IList<Loas> Loas { get; set; }
         public IList<Warnings> Warnings { get; set; }
-        public IList<Role> Roles { get; set; }
+        public UserRole Role { get; set; }
+        public TrainingRole TrainingRole { get; set; }
         public bool Training { get; set; }
         public bool Events { get; set; }
         public bool Visitor { get; set; }
@@ -63,12 +76,6 @@ namespace ZDC.Core.Models
         public DateTime Updated { get; set; }
     }
 
-    public class Role
-    {
-        [Key] public int Id { get; set; }
-        public string Name { get; set; }
-    }
-
     public enum UserRating
     {
         OBS = 1,
@@ -81,6 +88,28 @@ namespace ZDC.Core.Models
         I3 = 10,
         SUP,
         ADM
+    }
+
+    public enum UserRole
+    {
+        ATM,
+        DATM,
+        TA,
+        ATA,
+        WM,
+        AWM,
+        EC,
+        AEC,
+        FE,
+        AFE,
+        None
+    }
+
+    public enum TrainingRole
+    {
+        INS,
+        MTR,
+        None
     }
 
     public enum UserStatus

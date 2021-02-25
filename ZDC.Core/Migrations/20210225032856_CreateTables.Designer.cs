@@ -9,7 +9,7 @@ using ZDC.Core.Data;
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    [Migration("20210225011904_CreateTables")]
+    [Migration("20210225032856_CreateTables")]
     partial class CreateTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,9 +30,6 @@ namespace ZDC.Core.Migrations
 
                     b.Property<int>("Center")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("Ground")
                         .HasColumnType("int");
@@ -85,25 +82,6 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Loas");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Role");
-                });
-
             modelBuilder.Entity("ZDC.Core.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -134,11 +112,17 @@ namespace ZDC.Core.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<bool>("Training")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("TrainingRole")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime(6)");
@@ -197,13 +181,6 @@ namespace ZDC.Core.Migrations
                 {
                     b.HasOne("ZDC.Core.Models.User", null)
                         .WithMany("Loas")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Role", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", null)
-                        .WithMany("Roles")
                         .HasForeignKey("UserId");
                 });
 

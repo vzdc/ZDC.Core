@@ -18,7 +18,6 @@ namespace ZDC.Core.Migrations
                     Tower = table.Column<int>(nullable: false),
                     Approach = table.Column<int>(nullable: false),
                     Center = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
                     Updated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -38,6 +37,8 @@ namespace ZDC.Core.Migrations
                     Email = table.Column<string>(nullable: true),
                     UserRating = table.Column<int>(nullable: false),
                     CertificationsId = table.Column<int>(nullable: true),
+                    Role = table.Column<int>(nullable: false),
+                    TrainingRole = table.Column<int>(nullable: false),
                     Training = table.Column<bool>(nullable: false),
                     Events = table.Column<bool>(nullable: false),
                     Visitor = table.Column<bool>(nullable: false),
@@ -85,26 +86,6 @@ namespace ZDC.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Role",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Role", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Role_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Warnings",
                 columns: table => new
                 {
@@ -135,11 +116,6 @@ namespace ZDC.Core.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Role_UserId",
-                table: "Role",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_CertificationsId",
                 table: "Users",
                 column: "CertificationsId");
@@ -154,9 +130,6 @@ namespace ZDC.Core.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Loas");
-
-            migrationBuilder.DropTable(
-                name: "Role");
 
             migrationBuilder.DropTable(
                 name: "Warnings");
