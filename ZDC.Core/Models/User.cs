@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace ZDC.Core.Models
 {
-    public class User
+    public class User : BaseModel
     {
         public User()
         {
-            Certifications = new Certification
-            {
-                Ground = 0,
-                Tower = 0,
-                Approach = 0,
-                Center = 0,
-                Updated = DateTime.UtcNow
-            };
+            Certifications = new Certification();
         }
 
-        [Key] public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string FullName => $"{FirstName} {LastName}";
@@ -27,8 +18,11 @@ namespace ZDC.Core.Models
         public string ReverseNameCid => $"{LastName}, {FirstName} - {Id}";
         public UserRating UserRating { get; set; }
         public Certification Certifications { get; set; }
-        public IList<Loas> Loas { get; set; }
-        public IList<Warnings> Warnings { get; set; }
+        public IList<Loa> Loas { get; set; }
+        public IList<Warning> Warnings { get; set; }
+        public IList<ControllerLog> ControllerLogs { get; set; }
+        public IList<Dossier> DossierEntries { get; set; }
+        public IList<Feedback> Feedback { get; set; }
         public UserRole Role { get; set; }
         public TrainingRole TrainingRole { get; set; }
         public bool Training { get; set; }
@@ -37,43 +31,6 @@ namespace ZDC.Core.Models
         public string VisitorFrom { get; set; }
         public UserStatus Status { get; set; }
         public DateTime Joined { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
-    }
-
-    public class Certification
-    {
-        [Key] public int Id { get; set; }
-
-        public CertificationType Ground { get; set; }
-        public CertificationType Tower { get; set; }
-        public CertificationType Approach { get; set; }
-        public CertificationType Center { get; set; }
-        public DateTime Updated { get; set; }
-    }
-
-    public class Loas
-    {
-        [Key] public int Id { get; set; }
-
-        public string Reason { get; set; }
-        public string MoreInfo { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public LoaStatus Status { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
-    }
-
-    public class Warnings
-    {
-        [Key] public int Id { get; set; }
-        public WarningReason Reason { get; set; }
-        public WarningStatus Status { get; set; }
-        public int Month { get; set; }
-        public int Year { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
     }
 
     public enum UserRating
@@ -118,38 +75,5 @@ namespace ZDC.Core.Models
         Inactive,
         Loa,
         Removed
-    }
-
-    public enum CertificationType
-    {
-        None,
-        Solo,
-        Minor,
-        Certified
-    }
-
-    public enum LoaStatus
-    {
-        Pending,
-        MoreInfo,
-        Accepted,
-        Started,
-        Canceled,
-        Ended,
-        Controlled
-    }
-
-    public enum WarningReason
-    {
-        Activity,
-        Grp
-    }
-
-    public enum WarningStatus
-    {
-        Warned,
-        GotFirstHalf,
-        Resolved,
-        NeedsRemoval
     }
 }

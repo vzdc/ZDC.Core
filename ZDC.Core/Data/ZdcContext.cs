@@ -9,6 +9,11 @@ namespace ZDC.Core.Data
         {
         }
 
+        public DbSet<Airport> Airports { get; set; }
+        public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<OnlineController> OnlineControllers { get; set; }
+        public DbSet<TrainingTicket> TrainingTickets { get; set; }
         public DbSet<User> Users { get; set; }
     }
 }
