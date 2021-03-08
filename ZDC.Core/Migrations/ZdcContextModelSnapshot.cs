@@ -2,17 +2,15 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZDC.Core.Data;
 
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    [Migration("20210225204722_CreateLotsOfStuff")]
-    partial class CreateLotsOfStuff
+    partial class ZdcContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,8 +106,11 @@ namespace ZDC.Core.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("time(6)");
+                    b.Property<double>("Duration")
+                        .HasColumnType("double");
+
+                    b.Property<string>("Frequency")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("Login")
                         .HasColumnType("datetime(6)");
@@ -130,7 +131,7 @@ namespace ZDC.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ControllerLog");
+                    b.ToTable("ControllerLogs");
                 });
 
             modelBuilder.Entity("ZDC.Core.Models.Dossier", b =>
@@ -296,6 +297,61 @@ namespace ZDC.Core.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Feedback");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.Hours", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("CenterHours")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double>("LocalHours")
+                        .HasColumnType("double");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TraconHours")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hours");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.LastUpdated", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LastUpdated");
                 });
 
             modelBuilder.Entity("ZDC.Core.Models.Loa", b =>
@@ -524,8 +580,8 @@ namespace ZDC.Core.Migrations
 
             modelBuilder.Entity("ZDC.Core.Models.ControllerLog", b =>
                 {
-                    b.HasOne("ZDC.Core.Models.User", null)
-                        .WithMany("ControllerLogs")
+                    b.HasOne("ZDC.Core.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId");
                 });
 

@@ -8,9 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D7372DE1-FCDF-49DD-A277-576921C2D345}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		LICENSE.md = LICENSE.md
+		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZDC.Core.Tests", "ZDC.Core.Tests\ZDC.Core.Tests.csproj", "{A8EBE298-4523-42B1-98E4-B978C48BDAC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +22,6 @@ Global
 		{5705870C-CC77-46B7-9712-6FC54F411056}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5705870C-CC77-46B7-9712-6FC54F411056}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5705870C-CC77-46B7-9712-6FC54F411056}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8EBE298-4523-42B1-98E4-B978C48BDAC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8EBE298-4523-42B1-98E4-B978C48BDAC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8EBE298-4523-42B1-98E4-B978C48BDAC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8EBE298-4523-42B1-98E4-B978C48BDAC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

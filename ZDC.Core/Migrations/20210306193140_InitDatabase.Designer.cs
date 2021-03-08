@@ -9,8 +9,8 @@ using ZDC.Core.Data;
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    [Migration("20210225172719_AddTrainingTickets")]
-    partial class AddTrainingTickets
+    [Migration("20210306193140_InitDatabase")]
+    partial class InitDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,6 +18,29 @@ namespace ZDC.Core.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("ZDC.Core.Models.Airport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Icao")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Airports");
+                });
 
             modelBuilder.Entity("ZDC.Core.Models.Announcement", b =>
                 {
@@ -74,6 +97,71 @@ namespace ZDC.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Certification");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.ControllerLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double>("Duration")
+                        .HasColumnType("double");
+
+                    b.Property<string>("Frequency")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("Login")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Logout")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Position")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ControllerLogs");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.Dossier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Confidential")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("SubmitterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubmitterId");
+
+                    b.ToTable("Dossier");
                 });
 
             modelBuilder.Entity("ZDC.Core.Models.Event", b =>
@@ -170,7 +258,105 @@ namespace ZDC.Core.Migrations
                     b.ToTable("EventRegistration");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Loas", b =>
+            modelBuilder.Entity("ZDC.Core.Models.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Callsign")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Facility")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("Service")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Feedback");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.Hours", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("CenterHours")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double>("LocalHours")
+                        .HasColumnType("double");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TraconHours")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hours");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.LastUpdated", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LastUpdated");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.Loa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -204,7 +390,7 @@ namespace ZDC.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Loas");
+                    b.ToTable("Loa");
                 });
 
             modelBuilder.Entity("ZDC.Core.Models.OnlineController", b =>
@@ -353,7 +539,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Warnings", b =>
+            modelBuilder.Entity("ZDC.Core.Models.Warning", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -384,7 +570,7 @@ namespace ZDC.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Warnings");
+                    b.ToTable("Warning");
                 });
 
             modelBuilder.Entity("ZDC.Core.Models.Announcement", b =>
@@ -392,6 +578,20 @@ namespace ZDC.Core.Migrations
                     b.HasOne("ZDC.Core.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.ControllerLog", b =>
+                {
+                    b.HasOne("ZDC.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.Dossier", b =>
+                {
+                    b.HasOne("ZDC.Core.Models.User", "Submitter")
+                        .WithMany("DossierEntries")
+                        .HasForeignKey("SubmitterId");
                 });
 
             modelBuilder.Entity("ZDC.Core.Models.EventPosition", b =>
@@ -408,7 +608,14 @@ namespace ZDC.Core.Migrations
                         .HasForeignKey("EventId");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Loas", b =>
+            modelBuilder.Entity("ZDC.Core.Models.Feedback", b =>
+                {
+                    b.HasOne("ZDC.Core.Models.User", "User")
+                        .WithMany("Feedback")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("ZDC.Core.Models.Loa", b =>
                 {
                     b.HasOne("ZDC.Core.Models.User", null)
                         .WithMany("Loas")
@@ -440,7 +647,7 @@ namespace ZDC.Core.Migrations
                         .HasForeignKey("CertificationsId");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Warnings", b =>
+            modelBuilder.Entity("ZDC.Core.Models.Warning", b =>
                 {
                     b.HasOne("ZDC.Core.Models.User", null)
                         .WithMany("Warnings")

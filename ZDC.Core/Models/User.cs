@@ -20,7 +20,6 @@ namespace ZDC.Core.Models
         public Certification Certifications { get; set; }
         public IList<Loa> Loas { get; set; }
         public IList<Warning> Warnings { get; set; }
-        public IList<ControllerLog> ControllerLogs { get; set; }
         public IList<Dossier> DossierEntries { get; set; }
         public IList<Feedback> Feedback { get; set; }
         public UserRole Role { get; set; }

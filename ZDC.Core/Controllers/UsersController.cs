@@ -31,7 +31,6 @@ namespace ZDC.Core.Controllers
                 .Include(x => x.Certifications)
                 .Include(x => x.Loas)
                 .Include(x => x.Warnings)
-                .Include(x => x.ControllerLogs)
                 .ToListAsync();
 
             return Ok(users);
@@ -55,7 +54,6 @@ namespace ZDC.Core.Controllers
                 .Include(x => x.Certifications)
                 .Include(x => x.Loas)
                 .Include(x => x.Warnings)
-                .Include(x => x.ControllerLogs)
                 .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
@@ -101,19 +99,6 @@ namespace ZDC.Core.Controllers
                 return NotFound($"User: {id} not found");
 
             return Ok(user?.Warnings.ToList());
-        }
-
-        [HttpGet("{id}/ControllerLogs")]
-        public ActionResult<IEnumerable<ControllerLog>> GetControllerLogs(int id)
-        {
-            var user = _context.Users
-                .Include(x => x.ControllerLogs)
-                .FirstOrDefault(x => x.Id == id);
-
-            if (user == null)
-                return NotFound($"User: {id} not found");
-
-            return Ok(user?.ControllerLogs.ToList());
         }
 
         [HttpGet("{id}/DossierEntries")]

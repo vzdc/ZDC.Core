@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 using ZDC.Core.Data;
 
 namespace ZDC.Core
@@ -37,6 +38,9 @@ namespace ZDC.Core
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ZDC.Core v1"));
             }
+
+            app.UseMetricServer();
+            app.UseHttpMetrics();
 
             app.UseHttpsRedirection();
 
