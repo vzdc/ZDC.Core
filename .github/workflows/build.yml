@@ -1,0 +1,28 @@
+name: Build ZDC.Core
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Install Dependencies
+      run: dotnet restore ZDC.Core.sln
+    - name: Dotnet Build
+      run: dotnet build ZDC.Core.sln --configuration Release --no-restore
+    - name: Send Status To Discord
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}

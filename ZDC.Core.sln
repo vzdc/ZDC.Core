@@ -8,6 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D7372DE1-FCDF-49DD-A277-576921C2D345}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		.github\workflows\build.yml = .github\workflows\build.yml
+		deploy.sh = deploy.sh
+		.github\workflows\deploy.yml = .github\workflows\deploy.yml
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
