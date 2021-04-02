@@ -1,5 +1,7 @@
 cd /home/jake/ZDC.Core
 
+sudo systemctl stop core
+
 sudo dotnet publish --output /var/www/ZDC.Core
 
 cd /home/jake/ZDC.Core/ZDC.Core
@@ -12,4 +14,4 @@ cd /var/www/ZDC.Core
 
 sudo chmod -R 755 *
 
-sudo systemctl restart core
+sudo systemctl start core
