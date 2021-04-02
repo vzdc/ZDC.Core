@@ -2,12 +2,12 @@ name: Deploy ZDC.Core
 on:
   push:
     branches:
-      - master
+      - main
       - develop
 jobs:
   Deploy-Prod:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     steps:
     - name: Update Local Repository
       uses: appleboy/ssh-action@master
@@ -23,7 +23,7 @@ jobs:
         username: ${{ secrets.SSH_USER_PROD }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: cd /home/ZDC.Core && sudo chmod +x deploy.sh && ./deploy.sh
-  Deploy-Dev:
+  Deploy-Staging:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
