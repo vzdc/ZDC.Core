@@ -6,7 +6,7 @@ cd /home/jake/ZDC.Core/ZDC.Core
 
 sudo cp appsettings.json /var/www/ZDC.Core/appsettings.json
 
-sudo dotnet ef database update --configuration Release
+sudo dotnet-ef database update --configuration Release
 
 cd /var/www/ZDC.Core
 
