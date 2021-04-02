@@ -1,5 +1,9 @@
 cd /home/jake/ZDC.Core
 
+export TMPDIR=/tmp/NuGetScratch/
+
+mkdir -p ${TMPDIR}
+
 sudo systemctl stop core
 
 sudo dotnet publish --output /var/www/ZDC.Core
