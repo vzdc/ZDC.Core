@@ -1,6 +1,6 @@
 cd /home/jake/ZDC.Core
 
-dotnet publish --output /var/www/ZDC.Core
+sudo dotnet publish --output /var/www/ZDC.Core
 
 cd /home/jake/ZDC.Core/ZDC.Core
 
