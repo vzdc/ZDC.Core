@@ -31,6 +31,8 @@ namespace ZDC.Core
                 var context = services.GetRequiredService<ZdcContext>();
                 var config = services.GetService<IConfiguration>();
 
+                ZdcSeeder.SeedDatabase(context);
+
                 var jobs = new JobService(context, config);
 
                 jobs.StartJobs();

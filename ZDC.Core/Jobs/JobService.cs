@@ -12,7 +12,6 @@ namespace ZDC.Core.Jobs
         private readonly IConfiguration _config;
         private readonly ZdcContext _context;
 
-
         public JobService(ZdcContext context, IConfiguration config)
         {
             _context = context;
@@ -37,7 +36,7 @@ namespace ZDC.Core.Jobs
 
             var controllersTrigger = TriggerBuilder.Create()
                 .WithIdentity("ControllersTrigger", "Jobs")
-                .StartNow()
+                .StartAt(DateTime.UtcNow.AddSeconds(10))
                 .WithSimpleSchedule(x => x
                     .WithIntervalInSeconds(_config.GetValue<int>("DatafileInterval"))
                     .RepeatForever())
@@ -51,13 +50,27 @@ namespace ZDC.Core.Jobs
 
             var rosterTrigger = TriggerBuilder.Create()
                 .WithIdentity("RosterTrigger", "Jobs")
-                .StartAt(DateTime.UtcNow.AddSeconds(10))
+                .StartAt(DateTime.UtcNow.AddSeconds(20))
                 .WithSimpleSchedule(x => x
                     .WithIntervalInMinutes(_config.GetValue<int>("RosterInterval"))
                     .RepeatForever())
                 .Build();
 
             await scheduler.ScheduleJob(rosterJob, rosterTrigger);
+
+            var metarJob = JobBuilder.Create<MetarJob>()
+                .WithIdentity("MetarJob", "Jobs")
+                .Build();
+
+            var metarTrigger = TriggerBuilder.Create()
+                .WithIdentity("MetarTrigger", "Jobs")
+                .StartAt(DateTime.UtcNow.AddSeconds(30))
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInMinutes(_config.GetValue<int>("DatafileInterval"))
+                    .RepeatForever())
+                .Build();
+
+            await scheduler.ScheduleJob(metarJob, metarTrigger);
 
             await scheduler.Start();
         }

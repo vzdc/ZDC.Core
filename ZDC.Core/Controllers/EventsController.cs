@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -20,71 +19,87 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Event> GetEvents()
+        public async Task<ActionResult<IList<Event>>> GetEvents()
         {
-            return _context.Events.ToList();
+            return Ok(await _context.Events.ToListAsync());
         }
 
         [HttpGet("full")]
-        public IEnumerable<Event> GetEventsFull()
+        public async Task<ActionResult<IList<Event>>> GetEventsFull()
         {
-            return _context.Events
+            return Ok(await _context.Events
                 .Include(x => x.Registrations)
-                .ToList();
+                .ToListAsync());
         }
 
         [HttpGet("{id}/Registrations")]
-        public IEnumerable<EventRegistration> GetEventRegistrations(int id)
+        public async Task<ActionResult<IList<EventRegistration>>> GetEventRegistrations(int id)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
-            return @event?.Registrations;
+            if (@event == null) return NotFound($"Event: {id} not found");
+
+            return Ok(@event?.Registrations);
         }
 
         [HttpGet("{id}/Registrations/{registrationId}")]
-        public EventRegistration GetEventRegistration(int id, int registrationId)
+        public async Task<ActionResult<EventRegistration>> GetEventRegistration(int id, int registrationId)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
-            return @event?.Registrations.FirstOrDefault(x => x.Id == registrationId);
+            if (@event == null) return NotFound($"Event: {id} not found");
+
+            var registration = @event.Registrations.FirstOrDefault(x => x.Id == registrationId);
+
+            if (registration == null) return NotFound($"Event registration: {registrationId} not found");
+
+            return registration;
         }
 
         [HttpGet("{id}/Positions")]
-        public IEnumerable<EventPosition> GetEventPositions(int id)
+        public async Task<ActionResult<IList<EventPosition>>> GetEventPositions(int id)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
-            return @event?.Positions;
+            if (@event == null) return NotFound($"Event: {id} not found");
+
+            return Ok(@event.Positions);
         }
 
         [HttpGet("{id}/Positions/{positionId}")]
-        public EventPosition GetEventPosition(int id, int positionId)
+        public async Task<ActionResult<EventPosition>> GetEventPosition(int id, int positionId)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
-            return @event?.Positions.FirstOrDefault(x => x.Id == positionId);
+            if (@event == null) return NotFound($"Event: {id} not found");
+
+            var position = @event.Positions.FirstOrDefault(x => x.Id == positionId);
+
+            if (position == null) return NotFound($"Event position: {positionId} not found");
+
+            return position;
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchEvent(int id, [FromBody] JsonPatchDocument<Event> data)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutEvent(int id, [FromBody] Event data)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
             if (@event == null)
                 return NotFound($"Event: {id} not found");
 
-            data.ApplyTo(@event);
+            _context.Entry(@event).CurrentValues.SetValues(data);
 
             await _context.SaveChangesAsync();
 
             return Ok(@event);
         }
 
-        [HttpPatch("{id}/Registration/{registrationId}")]
-        public async Task<IActionResult> PatchEventRegistration(int id, int registrationId,
-            [FromBody] JsonPatchDocument<EventRegistration> data)
+        [HttpPut("{id}/Registration/{registrationId}")]
+        public async Task<ActionResult> PutEventRegistration(int id, int registrationId,
+            [FromBody] EventRegistration data)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
             if (@event == null)
                 return NotFound($"Event: {id} not found");
@@ -92,17 +107,17 @@ namespace ZDC.Core.Controllers
             var registration = @event.Registrations.FirstOrDefault(x => x.Id == registrationId);
 
             if (registration == null)
-                return NotFound($"Registration: {registrationId} not found");
+                return NotFound($"Event registration: {registrationId} not found");
 
-            data.ApplyTo(registration);
+            _context.Entry(registration).CurrentValues.SetValues(data);
 
             await _context.SaveChangesAsync();
 
             return Ok(registration);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutEvent([FromBody] Event @event)
+        [HttpPost]
+        public async Task<ActionResult> PostEvent([FromBody] Event @event)
         {
             if (!ModelState.IsValid)
                 return BadRequest(@event);
@@ -114,10 +129,10 @@ namespace ZDC.Core.Controllers
             return Ok(@event);
         }
 
-        [HttpPut("{id}/Registration")]
-        public async Task<IActionResult> PutEventRegistration(int id, [FromBody] EventRegistration registration)
+        [HttpPost("{id}/Registration")]
+        public async Task<IActionResult> PostEventRegistration(int id, [FromBody] EventRegistration registration)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
             if (@event == null)
                 return NotFound($"Event: {id} not found");
@@ -133,9 +148,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpPut("{id}/Position")]
-        public async Task<IActionResult> PutEventPosition(int id, [FromBody] EventPosition position)
+        public async Task<ActionResult> PostEventPosition(int id, [FromBody] EventPosition position)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
             if (@event == null)
                 return NotFound($"Event: {id} not found");
@@ -151,9 +166,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(int id)
+        public async Task<ActionResult> DeleteEvent(int id)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
             if (@event == null)
                 return NotFound($"Event: {id} not found");
@@ -166,9 +181,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpDelete("{id}/Registration/{registrationId}")]
-        public async Task<IActionResult> DeleteEventRegistration(int id, int registrationId)
+        public async Task<ActionResult> DeleteEventRegistration(int id, int registrationId)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
             if (@event == null)
                 return NotFound($"Event: {id} not found");
@@ -186,9 +201,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpDelete("{id}/Position/{positionId}")]
-        public async Task<IActionResult> DeleteEventPosition(int id, int positionId)
+        public async Task<ActionResult> DeleteEventPosition(int id, int positionId)
         {
-            var @event = _context.Events.FirstOrDefault(x => x.Id == id);
+            var @event = await _context.Events.FindAsync(id);
 
             if (@event == null)
                 return NotFound($"Event: {id} not found");

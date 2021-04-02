@@ -26,7 +26,7 @@ namespace ZDC.Core
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "ZDC.Core", Version = "v1"}); });
 
             services.AddDbContext<ZdcContext>(options =>
-                options.UseMySql(Configuration.GetValue<string>("ConnectionString")));
+                options.UseNpgsql(Configuration.GetValue<string>("ConnectionString")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

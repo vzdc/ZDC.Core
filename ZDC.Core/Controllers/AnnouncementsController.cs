@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -20,49 +18,49 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Announcement> GetAnnouncements()
+        public async Task<ActionResult<IList<Announcement>>> GetAnnouncements()
         {
-            return _context.Announcements.ToList();
+            return Ok(await _context.Announcements.ToListAsync());
         }
 
         [HttpGet("full")]
-        public IEnumerable<Announcement> GetAnnouncementsFull()
+        public async Task<ActionResult<IList<Announcement>>> GetAnnouncementsFull()
         {
-            return _context.Announcements
+            return Ok(await _context.Announcements
                 .Include(x => x.User)
-                .ToList();
+                .ToListAsync());
         }
 
         [HttpGet("{id}")]
-        public Announcement GetAnnouncement(int id)
+        public async Task<ActionResult<Announcement>> GetAnnouncement(int id)
         {
-            return _context.Announcements.Find(id);
+            return Ok(await _context.Announcements.FindAsync(id));
         }
 
         [HttpGet("{id}/full")]
-        public Announcement GetAnnouncementFull(int id)
+        public async Task<ActionResult<Announcement>> GetAnnouncementFull(int id)
         {
-            return _context.Announcements
+            return Ok(await _context.Announcements
                 .Include(x => x.User)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id));
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchAnnouncement(int id, [FromBody] JsonPatchDocument<Announcement> data)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutAnnouncement(int id, [FromBody] Announcement data)
         {
             var announcement = await _context.Announcements.FindAsync(id);
 
-            if (announcement == null) return NotFound(id);
+            if (announcement == null) return NotFound($"Announcement: {id} not found");
 
-            data.ApplyTo(announcement);
+            _context.Entry(announcement).CurrentValues.SetValues(data);
 
             await _context.SaveChangesAsync();
 
             return Ok(announcement);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutAnnouncement([FromBody] Announcement announcement)
+        [HttpPost]
+        public async Task<ActionResult> PostAnnouncement([FromBody] Announcement announcement)
         {
             if (!ModelState.IsValid) return BadRequest(announcement);
 
@@ -74,10 +72,10 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAnnouncement(int id)
+        public async Task<ActionResult> DeleteAnnouncement(int id)
         {
             var announcement = await _context.Announcements.FindAsync(id);
-            if (announcement == null) return NotFound(id);
+            if (announcement == null) return NotFound($"Announcement: {id} not found");
 
             _context.Announcements.Remove(announcement);
 

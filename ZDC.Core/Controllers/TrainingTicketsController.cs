@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -20,22 +19,18 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<TrainingTicket>> GetTrainingTickets()
+        public async Task<ActionResult<IList<TrainingTicket>>> GetTrainingTickets()
         {
-            var tickets = _context.TrainingTickets.ToList();
-
-            return Ok(tickets);
+            return Ok(await _context.TrainingTickets.ToListAsync());
         }
 
         [HttpGet("full")]
-        public ActionResult<IEnumerable<TrainingTicket>> GetTrainingTicketsFull()
+        public async Task<ActionResult<IList<TrainingTicket>>> GetTrainingTicketsFull()
         {
-            var tickets = _context.TrainingTickets
+            return Ok(await _context.TrainingTickets
                 .Include(x => x.Student)
                 .Include(x => x.Trainer)
-                .ToList();
-
-            return Ok(tickets);
+                .ToListAsync());
         }
 
         [HttpGet("{id}")]
@@ -44,18 +39,18 @@ namespace ZDC.Core.Controllers
             var ticket = await _context.TrainingTickets.FindAsync(id);
 
             if (ticket == null)
-                return NotFound($"Ticket: {id} not found");
+                return NotFound($"Training ticket: {id} not found");
 
             return Ok(ticket);
         }
 
         [HttpGet("{id}/full")]
-        public ActionResult<TrainingTicket> GetTrainingTicketFull(int id)
+        public async Task<ActionResult<TrainingTicket>> GetTrainingTicketFull(int id)
         {
-            var ticket = _context.TrainingTickets
+            var ticket = await _context.TrainingTickets
                 .Include(x => x.Student)
                 .Include(x => x.Trainer)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (ticket == null)
                 return NotFound($"Ticket: {id} not found");
@@ -64,7 +59,7 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("Student/{id}")]
-        public async Task<ActionResult<IEnumerable<TrainingTicket>>> GetStudentTrainingTickets(int id)
+        public async Task<ActionResult<IList<TrainingTicket>>> GetStudentTrainingTickets(int id)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -75,35 +70,33 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("Trainer/{id}")]
-        public async Task<ActionResult<IEnumerable<TrainingTicket>>> GetTrainerTrainingTickets(int id)
+        public async Task<ActionResult<IList<TrainingTicket>>> GetTrainerTrainingTickets(int id)
         {
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
 
-            var tickets = await _context.TrainingTickets.AnyAsync(x => x.Trainer == user);
-
-            return Ok(tickets);
+            return Ok(await _context.TrainingTickets.Where(x => x.Trainer == user).ToListAsync());
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchTrainingTicket(int id, [FromBody] JsonPatchDocument<TrainingTicket> data)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutTrainingTicket(int id, [FromBody] TrainingTicket data)
         {
-            var ticket = _context.TrainingTickets.FirstOrDefault(x => x.Id == id);
+            var ticket = await _context.TrainingTickets.FindAsync(id);
 
             if (ticket == null)
                 return NotFound($"Ticket: {id} not found");
 
-            data.ApplyTo(ticket);
+            _context.Entry(ticket).CurrentValues.SetValues(data);
 
             await _context.SaveChangesAsync();
 
             return Ok(ticket);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutTrainingTicket([FromBody] TrainingTicket ticket)
+        [HttpPost]
+        public async Task<ActionResult> PostTrainingTicket([FromBody] TrainingTicket ticket)
         {
             if (!ModelState.IsValid) return BadRequest(ticket);
 
@@ -115,9 +108,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTrainingTicket(int id)
+        public async Task<ActionResult> DeleteTrainingTicket(int id)
         {
-            var ticket = _context.TrainingTickets.FirstOrDefault(x => x.Id == id);
+            var ticket = await _context.TrainingTickets.FindAsync(id);
 
             if (ticket == null)
                 return NotFound($"Ticket: {id} not found");

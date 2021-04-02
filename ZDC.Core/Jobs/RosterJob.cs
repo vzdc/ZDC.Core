@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Quartz;
 using Serilog;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Jobs
 {
@@ -40,15 +40,27 @@ namespace ZDC.Core.Jobs
             GC.WaitForPendingFinalizers();
             GC.Collect();
 
-            var users = new List<User>();
-
             if (roster != null)
                 foreach (var user in roster)
                 {
                     var cid = user.Value<int>("cid");
 
-                    if (await _context.Users.FindAsync(cid) != null)
+                    var dbUser = await _context.Users.FindAsync(cid);
+                    if (dbUser != null)
+                    {
+                        dbUser.FirstName = user.Value<string>("fname");
+                        dbUser.LastName = user.Value<string>("lname");
+                        dbUser.Email = user.Value<string>("email");
+                        if (Enum.IsDefined(typeof(UserRating), user.Value<int>("rating")))
+                            dbUser.UserRating = (UserRating) user.Value<int>("rating");
+                        else
+                            dbUser.UserRating = UserRating.OBS;
+                        dbUser.Visitor = user.Value<string>("membership")?.Equals("visit") ?? false;
+                        if (dbUser.Visitor)
+                            dbUser.VisitorFrom = user.Value<string>("facility");
+                        await _context.SaveChangesAsync();
                         continue;
+                    }
 
                     var firstName = user.Value<string>("fname");
                     var lastName = user.Value<string>("lname");
@@ -59,22 +71,25 @@ namespace ZDC.Core.Jobs
                     else
                         rating = UserRating.OBS;
                     var joinDate = user.Value<DateTime>("facility_join");
-                    var homeController = user.Value<bool>("flag_homecontroller");
+                    var visitor = user.Value<string>("membership")?.Equals("visit") ?? false;
+                    var visitorFrom = string.Empty;
+                    if (visitor)
+                        visitorFrom = user.Value<string>("facility");
 
                     await _context.AddAsync(new User
                     {
                         Id = cid,
                         LastName = lastName,
                         FirstName = firstName,
-                        Initials = GetInitials(firstName, lastName),
+                        Initials = await GetInitials(firstName, lastName),
                         Email = email,
                         UserRating = rating,
                         Role = UserRole.None,
                         TrainingRole = TrainingRole.None,
                         Training = true,
                         Events = true,
-                        Visitor = homeController,
-                        VisitorFrom = string.Empty,
+                        Visitor = visitor,
+                        VisitorFrom = visitorFrom,
                         Status = UserStatus.Active,
                         Joined = joinDate,
                         Created = DateTime.UtcNow,
@@ -83,13 +98,13 @@ namespace ZDC.Core.Jobs
                 }
         }
 
-        public string GetInitials(string firstName, string lastName)
+        public async Task<string> GetInitials(string firstName, string lastName)
         {
             var initials = $"{firstName[0]}{lastName[0]}";
 
-            var initialsExist = _context.Users.AsQueryable()
-                .Where(x => x.Initials.Equals(initials, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var initialsExist = await _context.Users.AsQueryable()
+                .Where(x => x.Initials.Equals(initials))
+                .ToListAsync();
 
             if (!initialsExist.Any()) return initials;
 
@@ -97,9 +112,9 @@ namespace ZDC.Core.Jobs
             {
                 initials = $"{firstName[0]}{letter.ToString().ToUpper()}";
 
-                var exists = _context.Users.AsQueryable()
-                    .Where(x => x.Initials.Equals(initials, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                var exists = await _context.Users.AsQueryable()
+                    .Where(x => x.Initials.Equals(initials))
+                    .ToListAsync();
 
                 if (!exists.Any()) return initials;
             }
@@ -108,9 +123,9 @@ namespace ZDC.Core.Jobs
             {
                 initials = $"{letter.ToString().ToUpper()}{lastName[0]}";
 
-                var exists = _context.Users.AsQueryable()
-                    .Where(x => x.Initials.Equals(initials, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                var exists = await _context.Users.AsQueryable()
+                    .Where(x => x.Initials.Equals(initials))
+                    .ToListAsync();
 
                 if (!exists.Any()) return initials;
             }

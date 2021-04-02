@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -19,34 +18,37 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Airport> GetAirports()
+        public async Task<ActionResult<IList<Airport>>> GetAirports()
         {
-            return _context.Airports.ToList();
+            return Ok(await _context.Airports
+                .Include(x => x.Metar).ToListAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Airport>> GetAirport(int id)
         {
-            return await _context.Airports.FindAsync(id);
+            return Ok(await _context.Airports
+                .Include(x => x.Metar)
+                .FirstOrDefaultAsync(x => x.Id == id));
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchAirport(int id, [FromBody] JsonPatchDocument<Airport> data)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutAirport(int id, [FromBody] Airport data)
         {
             var airport = await _context.Airports.FindAsync(id);
 
             if (airport == null)
                 return NotFound($"Airport: {id} not found");
 
-            data.ApplyTo(airport);
+            _context.Entry(airport).CurrentValues.SetValues(data);
 
             await _context.SaveChangesAsync();
 
             return Ok(airport);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutAirport([FromBody] Airport airport)
+        [HttpPost]
+        public async Task<ActionResult> PostAirport([FromBody] Airport airport)
         {
             if (!ModelState.IsValid) return BadRequest(airport);
 
@@ -58,7 +60,7 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAirport(int id)
+        public async Task<ActionResult> DeleteAirport(int id)
         {
             var airport = await _context.Airports.FindAsync(id);
 

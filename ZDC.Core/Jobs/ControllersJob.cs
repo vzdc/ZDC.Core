@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using Quartz;
 using Serilog;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Jobs
 {
@@ -72,6 +72,7 @@ namespace ZDC.Core.Jobs
                 else
                     _datafile = true;
 
+                // ReSharper disable once RedundantAssignment
                 content = null;
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
@@ -99,14 +100,13 @@ namespace ZDC.Core.Jobs
                 foreach (var client in json)
                 {
                     var facility = client.Value<string>("callsign");
-                    var name = client.Value<string>("name");
                     var frequency = client.Value<string>("frequency");
-                    var cid = int.Parse(client.Value<string>("cid"));
+                    var cid = int.Parse(client.Value<string>("cid") ?? "");
                     var login = client.Value<DateTime>("logon_time");
 
-                    if (!Constants.ControllerPositions.Contains(
-                            facility.Length > 4 ? facility.Substring(0, 4) : facility) ||
-                        facility.Contains("OBS")) continue;
+                    if (facility != null && (!Constants.ControllerPositions.Contains(
+                                                 facility.Length > 4 ? facility.Substring(0, 4) : facility) ||
+                                             facility.Contains("OBS"))) continue;
                     var user = await _context.Users.FindAsync(cid);
 
                     if (user != null)
@@ -153,8 +153,7 @@ namespace ZDC.Core.Jobs
                         Frequency = controller.Frequency,
                         Online = onlineTime,
                         Position = controller.Position,
-                        Created = DateTime.UtcNow,
-                        Updated = DateTime.UtcNow
+                        Created = DateTime.UtcNow
                     });
                 }
 
@@ -300,7 +299,26 @@ namespace ZDC.Core.Jobs
         /// <param name="controllers">List of new controllers</param>
         public async Task CheckControllerLoas(List<ControllerLog> controllers)
         {
-            // todo check loas
+            try
+            {
+                foreach (var controller in controllers)
+                {
+                    var loa = controller.User.Loas
+                        .Where(x => x.Start <= DateTime.UtcNow)
+                        .Where(x => x.End >= DateTime.UtcNow)
+                        .FirstOrDefault(x => x.Status == LoaStatus.Started);
+                    if (loa == null) continue;
+                    controller.User.Status = UserStatus.Active;
+                    loa.Status = LoaStatus.Controlled;
+                    // todo send email
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Checking if controller is on LOA encountered an error: {ex.Message}");
+                await _context.SaveChangesAsync();
+            }
         }
 
         /// <summary>
