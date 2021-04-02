@@ -6,7 +6,7 @@ mkdir -p ${TMPDIR}
 
 sudo systemctl stop core
 
-sudo dotnet publish --output /var/www/ZDC.Core
+sudo dotnet publish --output /var/www/ZDC.Core --configuration Release
 
 cd /home/jake/ZDC.Core/ZDC.Core
 
