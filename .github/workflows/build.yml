@@ -21,8 +21,3 @@ jobs:
       run: dotnet restore ZDC.Core.sln
     - name: Dotnet Build
       run: dotnet build ZDC.Core.sln --configuration Release --no-restore
-    - name: Send Status To Discord
-      uses: sarisia/actions-status-discord@v1
-      if: always()
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK }}
