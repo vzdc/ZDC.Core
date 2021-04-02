@@ -1,15 +1,21 @@
 cd /home/jake/ZDC.Core
 
+export TMPDIR=/tmp/NuGetScratch/
+
+mkdir -p ${TMPDIR}
+
+sudo systemctl stop core
+
 sudo dotnet publish --output /var/www/ZDC.Core
 
 cd /home/jake/ZDC.Core/ZDC.Core
 
 sudo cp appsettings.json /var/www/ZDC.Core/appsettings.json
 
-sudo dotnet ef database update --configuration Release
+dotnet-ef database update --configuration Release
 
 cd /var/www/ZDC.Core
 
 sudo chmod -R 755 *
 
-sudo systemctl restart core
+sudo systemctl start core
