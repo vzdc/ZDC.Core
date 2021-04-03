@@ -21,7 +21,7 @@ namespace ZDC.Core.Controllers
         [HttpGet]
         public async Task<ActionResult<IList<User>>> GetUsers()
         {
-            return Ok(await _context.Users.OrderByDescending(x => x.FirstName).ToListAsync());
+            return Ok(await _context.Users.OrderBy(x => x.FullName).ToListAsync());
         }
 
         [HttpGet("full")]
@@ -33,7 +33,7 @@ namespace ZDC.Core.Controllers
                 .Include(x => x.Warnings)
                 .Include(x => x.DossierEntries)
                 .Include(x => x.Feedback)
-                .OrderByDescending(x => x.FirstName)
+                .OrderBy(x => x.FullName)
                 .ToListAsync());
         }
 
