@@ -118,7 +118,7 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Feedback")]
-        public async ActionResult<IList<Feedback>> GetFeedback(int id)
+        public ActionResult<IList<Feedback>> GetFeedback(int id)
         {
             var user = _context.Users
                 .Include(x => x.Feedback)
