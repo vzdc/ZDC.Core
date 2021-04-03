@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
 using ZDC.Models;
 
@@ -18,15 +18,15 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<StaffingRequest>>> GetStaffingRequests()
+        public ActionResult<IList<StaffingRequest>> GetStaffingRequests()
         {
-            return Ok(await _context.StaffingRequests.ToListAsync());
+            return Ok(_context.StaffingRequests.ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<StaffingRequest>> GetStaffingRequest(int id)
+        public ActionResult<StaffingRequest> GetStaffingRequest(int id)
         {
-            var request = await _context.StaffingRequests.FindAsync(id);
+            var request = _context.StaffingRequests.Find(id);
 
             if (request == null) return NotFound($"Staffing request: {id} not found");
 

@@ -19,33 +19,33 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<Event>>> GetEvents()
+        public ActionResult<IList<Event>> GetEvents()
         {
-            return Ok(await _context.Events.ToListAsync());
+            return Ok(_context.Events.ToList());
         }
 
         [HttpGet("full")]
-        public async Task<ActionResult<IList<Event>>> GetEventsFull()
+        public ActionResult<IList<Event>> GetEventsFull()
         {
-            return Ok(await _context.Events
+            return Ok(_context.Events
                 .Include(x => x.Registrations)
-                .ToListAsync());
+                .ToList());
         }
 
         [HttpGet("{id}/Registrations")]
-        public async Task<ActionResult<IList<EventRegistration>>> GetEventRegistrations(int id)
+        public ActionResult<IList<EventRegistration>> GetEventRegistrations(int id)
         {
-            var @event = await _context.Events.FindAsync(id);
+            var @event = _context.Events.Find(id);
 
             if (@event == null) return NotFound($"Event: {id} not found");
 
-            return Ok(@event?.Registrations);
+            return Ok(@event.Registrations);
         }
 
         [HttpGet("{id}/Registrations/{registrationId}")]
-        public async Task<ActionResult<EventRegistration>> GetEventRegistration(int id, int registrationId)
+        public ActionResult<EventRegistration> GetEventRegistration(int id, int registrationId)
         {
-            var @event = await _context.Events.FindAsync(id);
+            var @event = _context.Events.Find(id);
 
             if (@event == null) return NotFound($"Event: {id} not found");
 
@@ -57,9 +57,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Positions")]
-        public async Task<ActionResult<IList<EventPosition>>> GetEventPositions(int id)
+        public ActionResult<IList<EventPosition>> GetEventPositions(int id)
         {
-            var @event = await _context.Events.FindAsync(id);
+            var @event = _context.Events.Find(id);
 
             if (@event == null) return NotFound($"Event: {id} not found");
 
@@ -67,9 +67,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Positions/{positionId}")]
-        public async Task<ActionResult<EventPosition>> GetEventPosition(int id, int positionId)
+        public ActionResult<EventPosition> GetEventPosition(int id, int positionId)
         {
-            var @event = await _context.Events.FindAsync(id);
+            var @event = _context.Events.Find(id);
 
             if (@event == null) return NotFound($"Event: {id} not found");
 

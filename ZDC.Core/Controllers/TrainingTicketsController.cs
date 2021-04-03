@@ -19,24 +19,24 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<TrainingTicket>>> GetTrainingTickets()
+        public ActionResult<IList<TrainingTicket>> GetTrainingTickets()
         {
-            return Ok(await _context.TrainingTickets.ToListAsync());
+            return Ok(_context.TrainingTickets.ToList());
         }
 
         [HttpGet("full")]
-        public async Task<ActionResult<IList<TrainingTicket>>> GetTrainingTicketsFull()
+        public ActionResult<IList<TrainingTicket>> GetTrainingTicketsFull()
         {
-            return Ok(await _context.TrainingTickets
+            return Ok(_context.TrainingTickets
                 .Include(x => x.Student)
                 .Include(x => x.Trainer)
-                .ToListAsync());
+                .ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TrainingTicket>> GetTrainingTicket(int id)
+        public ActionResult<TrainingTicket> GetTrainingTicket(int id)
         {
-            var ticket = await _context.TrainingTickets.FindAsync(id);
+            var ticket = _context.TrainingTickets.Find(id);
 
             if (ticket == null)
                 return NotFound($"Training ticket: {id} not found");
@@ -45,12 +45,12 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/full")]
-        public async Task<ActionResult<TrainingTicket>> GetTrainingTicketFull(int id)
+        public ActionResult<TrainingTicket> GetTrainingTicketFull(int id)
         {
-            var ticket = await _context.TrainingTickets
+            var ticket = _context.TrainingTickets
                 .Include(x => x.Student)
                 .Include(x => x.Trainer)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
 
             if (ticket == null)
                 return NotFound($"Ticket: {id} not found");
@@ -59,25 +59,25 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("Student/{id}")]
-        public async Task<ActionResult<IList<TrainingTicket>>> GetStudentTrainingTickets(int id)
+        public ActionResult<IList<TrainingTicket>> GetStudentTrainingTickets(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = _context.Users.Find(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
 
-            return Ok(await _context.TrainingTickets.Where(x => x.Student == user).ToListAsync());
+            return Ok(_context.TrainingTickets.Where(x => x.Student == user).ToList());
         }
 
         [HttpGet("Trainer/{id}")]
-        public async Task<ActionResult<IList<TrainingTicket>>> GetTrainerTrainingTickets(int id)
+        public ActionResult<IList<TrainingTicket>> GetTrainerTrainingTickets(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = _context.Users.Find(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
 
-            return Ok(await _context.TrainingTickets.Where(x => x.Trainer == user).ToListAsync());
+            return Ok(_context.TrainingTickets.Where(x => x.Trainer == user).ToList());
         }
 
         [HttpPut("{id}")]

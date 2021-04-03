@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,31 +19,31 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<Announcement>>> GetAnnouncements()
+        public ActionResult<IList<Announcement>> GetAnnouncements()
         {
-            return Ok(await _context.Announcements.ToListAsync());
+            return Ok(_context.Announcements.ToList());
         }
 
         [HttpGet("full")]
-        public async Task<ActionResult<IList<Announcement>>> GetAnnouncementsFull()
+        public ActionResult<IList<Announcement>> GetAnnouncementsFull()
         {
-            return Ok(await _context.Announcements
+            return Ok(_context.Announcements
                 .Include(x => x.User)
-                .ToListAsync());
+                .ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Announcement>> GetAnnouncement(int id)
+        public ActionResult<Announcement> GetAnnouncement(int id)
         {
-            return Ok(await _context.Announcements.FindAsync(id));
+            return Ok(_context.Announcements.Find(id));
         }
 
         [HttpGet("{id}/full")]
-        public async Task<ActionResult<Announcement>> GetAnnouncementFull(int id)
+        public ActionResult<Announcement> GetAnnouncementFull(int id)
         {
-            return Ok(await _context.Announcements
+            return Ok(_context.Announcements
                 .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id));
+                .FirstOrDefault(x => x.Id == id));
         }
 
         [HttpPut("{id}")]

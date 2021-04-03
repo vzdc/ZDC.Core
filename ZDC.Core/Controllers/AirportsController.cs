@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,18 +19,18 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<Airport>>> GetAirports()
+        public ActionResult<IList<Airport>> GetAirports()
         {
-            return Ok(await _context.Airports
-                .Include(x => x.Metar).ToListAsync());
+            return Ok(_context.Airports
+                .Include(x => x.Metar).ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Airport>> GetAirport(int id)
+        public ActionResult<Airport> GetAirport(int id)
         {
-            return Ok(await _context.Airports
+            return Ok(_context.Airports
                 .Include(x => x.Metar)
-                .FirstOrDefaultAsync(x => x.Id == id));
+                .FirstOrDefault(x => x.Id == id));
         }
 
         [HttpPut("{id}")]

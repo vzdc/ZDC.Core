@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
 using ZDC.Models;
 
@@ -18,15 +18,15 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<BugReport>>> GetBugReports()
+        public ActionResult<IList<BugReport>> GetBugReports()
         {
-            return Ok(await _context.BugReports.ToListAsync());
+            return Ok(_context.BugReports.ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BugReport>> GetBugReport(int id)
+        public ActionResult<BugReport> GetBugReport(int id)
         {
-            var report = await _context.BugReports.FindAsync(id);
+            var report = _context.BugReports.Find(id);
 
             if (report == null) return NotFound($"Bug report: {id} not found");
 

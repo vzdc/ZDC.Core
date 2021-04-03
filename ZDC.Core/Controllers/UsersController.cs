@@ -19,28 +19,28 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<User>>> GetUsers()
+        public ActionResult<IList<User>> GetUsers()
         {
-            return Ok(await _context.Users.OrderBy(x => x.LastName).ToListAsync());
+            return Ok(_context.Users.OrderBy(x => x.LastName).ToList());
         }
 
         [HttpGet("full")]
-        public async Task<ActionResult<IList<User>>> GetUsersFull()
+        public ActionResult<IList<User>> GetUsersFull()
         {
-            return Ok(await _context.Users
+            return Ok(_context.Users
                 .Include(x => x.Certifications)
                 .Include(x => x.Loas)
                 .Include(x => x.Warnings)
                 .Include(x => x.DossierEntries)
                 .Include(x => x.Feedback)
                 .OrderBy(x => x.LastName)
-                .ToListAsync());
+                .ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public ActionResult<User> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = _context.Users.Find(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -49,15 +49,15 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/full")]
-        public async Task<ActionResult<User>> GetUserFull(int id)
+        public ActionResult<User> GetUserFull(int id)
         {
-            var user = await _context.Users
+            var user = _context.Users
                 .Include(x => x.Certifications)
                 .Include(x => x.Loas)
                 .Include(x => x.Warnings)
                 .Include(x => x.DossierEntries)
                 .Include(x => x.Feedback)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -66,11 +66,11 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Certification")]
-        public async Task<ActionResult<Certification>> GetUserCertification(int id)
+        public ActionResult<Certification> GetUserCertification(int id)
         {
-            var user = await _context.Users
+            var user = _context.Users
                 .Include(x => x.Certifications)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -79,11 +79,11 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Loas")]
-        public async Task<ActionResult<IList<Loa>>> GetLoas(int id)
+        public ActionResult<IList<Loa>> GetLoas(int id)
         {
-            var user = await _context.Users
+            var user = _context.Users
                 .Include(x => x.Loas)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -92,11 +92,11 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Warnings")]
-        public async Task<ActionResult<IList<Warning>>> GetWarnings(int id)
+        public ActionResult<IList<Warning>> GetWarnings(int id)
         {
-            var user = await _context.Users
+            var user = _context.Users
                 .Include(x => x.Warnings)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -105,11 +105,11 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/DossierEntries")]
-        public async Task<ActionResult<IList<Dossier>>> GetDossierEntries(int id)
+        public ActionResult<IList<Dossier>> GetDossierEntries(int id)
         {
-            var user = await _context.Users
+            var user = _context.Users
                 .Include(x => x.DossierEntries)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -118,11 +118,11 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Feedback")]
-        public async Task<ActionResult<IList<Feedback>>> GetFeedback(int id)
+        public async ActionResult<IList<Feedback>> GetFeedback(int id)
         {
-            var user = await _context.Users
+            var user = _context.Users
                 .Include(x => x.Feedback)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -131,9 +131,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/Role")]
-        public async Task<ActionResult<UserRole>> GetRole(int id)
+        public ActionResult<UserRole> GetRole(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = _context.Users.Find(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -142,9 +142,9 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("{id}/TrainingRole")]
-        public async Task<ActionResult<TrainingRole>> GetTrainingRole(int id)
+        public ActionResult<TrainingRole> GetTrainingRole(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = _context.Users.Find(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -153,17 +153,17 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet("Online")]
-        public async Task<ActionResult<IList<OnlineController>>> GetOnlineControllers()
+        public ActionResult<IList<OnlineController>> GetOnlineControllers()
         {
-            return Ok(await _context.OnlineControllers.ToListAsync());
+            return Ok(_context.OnlineControllers.ToList());
         }
 
         [HttpGet("Online/full")]
-        public async Task<ActionResult<IList<OnlineController>>> GetOnlineControllersFull()
+        public ActionResult<IList<OnlineController>> GetOnlineControllersFull()
         {
-            return Ok(await _context.OnlineControllers
+            return Ok(_context.OnlineControllers
                 .Include(x => x.User)
-                .ToListAsync());
+                .ToList());
         }
 
         [HttpPut("{id}")]
