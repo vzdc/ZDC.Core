@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -164,6 +165,20 @@ namespace ZDC.Core.Controllers
             return Ok(_context.OnlineControllers
                 .Include(x => x.User)
                 .ToList());
+        }
+
+        [HttpGet("top")]
+        public ActionResult<IList<Hours>> GetTopControllers()
+        {
+            return Ok(_context.Hours.ToList().Where(x => x.Month == DateTime.UtcNow.Month)
+                .Where(x => x.Year == DateTime.UtcNow.Year).OrderByDescending(x => x.TotalHours).Take(3).ToList());
+        }
+
+        [HttpGet("top/full")]
+        public ActionResult<IList<Hours>> GetTopControllersFull()
+        {
+            return Ok(_context.Hours.Include(x => x.User).ToList().Where(x => x.Month == DateTime.UtcNow.Month)
+                .Where(x => x.Year == DateTime.UtcNow.Year).OrderByDescending(x => x.TotalHours).Take(3).ToList());
         }
 
         [HttpPut("{id}")]

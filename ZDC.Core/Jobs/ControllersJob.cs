@@ -184,14 +184,14 @@ namespace ZDC.Core.Jobs
                             .FirstOrDefault(
                                 x => x.Month == DateTime.UtcNow.Month
                                      && x.Year == DateTime.UtcNow.Year
-                                     && x.UserId == log.User.Id
+                                     && x.User.Id == log.User.Id
                             );
 
                         if (monthHours == null)
                         {
                             var hours = new Hours
                             {
-                                UserId = log.User.Id,
+                                User = log.User,
                                 Year = DateTime.UtcNow.Year,
                                 Month = DateTime.UtcNow.Month
                             };
