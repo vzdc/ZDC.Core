@@ -145,14 +145,13 @@ namespace ZDC.Core.Jobs
 
                 foreach (var controller in logs.ToList())
                 {
-                    var onlineTime = controller.Logout - controller.Login;
-
+                    var timeOnline = DateTime.UtcNow - controller.Login;
                     await _context.OnlineControllers.AddAsync(new OnlineController
                     {
                         User = controller.User,
                         Frequency = controller.Frequency,
-                        Online = onlineTime,
                         Position = controller.Position,
+                        Online = $"{timeOnline.Hours}h {timeOnline.Minutes}m",
                         Created = DateTime.UtcNow
                     });
                 }

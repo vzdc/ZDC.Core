@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZDC.Core.Data;
@@ -9,9 +10,10 @@ using ZDC.Core.Data;
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    partial class ZdcContextModelSnapshot : ModelSnapshot
+    [Migration("20210412231614_UpdatesAndAddFacilities")]
+    partial class UpdatesAndAddFacilities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -493,9 +495,6 @@ namespace ZDC.Core.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Frequency")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Online")
                         .HasColumnType("text");
 
                     b.Property<string>("Position")

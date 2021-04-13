@@ -52,7 +52,7 @@ namespace ZDC.Core.Jobs
                 .WithIdentity("RosterTrigger", "Jobs")
                 .StartAt(DateTime.UtcNow.AddSeconds(20))
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInMinutes(_config.GetValue<int>("RosterInterval"))
+                    .WithIntervalInMinutes(_config.GetValue<int>("JobInterval"))
                     .RepeatForever())
                 .Build();
 
@@ -66,11 +66,39 @@ namespace ZDC.Core.Jobs
                 .WithIdentity("MetarTrigger", "Jobs")
                 .StartAt(DateTime.UtcNow.AddSeconds(30))
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInMinutes(_config.GetValue<int>("DatafileInterval"))
+                    .WithIntervalInMinutes(_config.GetValue<int>("JobInterval"))
                     .RepeatForever())
                 .Build();
 
             await scheduler.ScheduleJob(metarJob, metarTrigger);
+
+            var overflightsJob = JobBuilder.Create<OverflightsJob>()
+                .WithIdentity("OverflightsJob", "Jobs")
+                .Build();
+
+            var overflightsTrigger = TriggerBuilder.Create()
+                .WithIdentity("OverflightsTrigger", "Jobs")
+                .StartAt(DateTime.UtcNow.AddSeconds(40))
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInMinutes(_config.GetValue<int>("DatafileInterval"))
+                    .RepeatForever())
+                .Build();
+
+            await scheduler.ScheduleJob(overflightsJob, overflightsTrigger);
+
+            var facilitiesJob = JobBuilder.Create<FacilitiesJob>()
+                .WithIdentity("FacilitiesJob", "Jobs")
+                .Build();
+
+            var facilitiesController = TriggerBuilder.Create()
+                .WithIdentity("FacilitiesTrigger", "Jobs")
+                .StartAt(DateTime.UtcNow.AddSeconds(50))
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInMinutes(_config.GetValue<int>("DatafileInterval"))
+                    .RepeatForever())
+                .Build();
+
+            await scheduler.ScheduleJob(facilitiesJob, facilitiesController);
 
             await scheduler.Start();
         }
