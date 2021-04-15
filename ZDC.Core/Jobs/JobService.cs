@@ -86,20 +86,6 @@ namespace ZDC.Core.Jobs
 
             await scheduler.ScheduleJob(overflightsJob, overflightsTrigger);
 
-            var facilitiesJob = JobBuilder.Create<FacilitiesJob>()
-                .WithIdentity("FacilitiesJob", "Jobs")
-                .Build();
-
-            var facilitiesController = TriggerBuilder.Create()
-                .WithIdentity("FacilitiesTrigger", "Jobs")
-                .StartAt(DateTime.UtcNow.AddSeconds(50))
-                .WithSimpleSchedule(x => x
-                    .WithIntervalInMinutes(_config.GetValue<int>("DatafileInterval"))
-                    .RepeatForever())
-                .Build();
-
-            await scheduler.ScheduleJob(facilitiesJob, facilitiesController);
-
             await scheduler.Start();
         }
     }
