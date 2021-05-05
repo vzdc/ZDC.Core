@@ -13,6 +13,7 @@ using ZDC.Models;
 
 namespace ZDC.Core.Jobs
 {
+    [DisallowConcurrentExecution]
     public class OverflightsJob : IJob
     {
         private IConfiguration _configuration;
@@ -47,7 +48,7 @@ namespace ZDC.Core.Jobs
                     Callsign = overflight.Value<string>("callsign"),
                     Departure = overflight.Value<string>("dep"),
                     Arrival = overflight.Value<string>("arr"),
-                    Route = overflight.Value<string>("route"),
+                    Route = overflight.Value<string>("route").Replace('+', ' ').TrimEnd().TrimStart(),
                     Latitude = overflight.Value<string>("lat"),
                     Longitude = overflight.Value<string>("lon")
                 })

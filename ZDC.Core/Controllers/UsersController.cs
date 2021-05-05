@@ -49,6 +49,18 @@ namespace ZDC.Core.Controllers
             return Ok(user);
         }
 
+        [HttpGet("Staff")]
+        public ActionResult<IList<User>> GetStaff()
+        {
+            return Ok(_context.Users.Where(x => x.Role != UserRole.None).ToList());
+        }
+
+        [HttpGet("Trainingstaff")]
+        public ActionResult<IList<User>> GetTrainingStaff()
+        {
+            return Ok(_context.Users.Where(x => x.TrainingRole != TrainingRole.None).ToList());
+        }
+
         [HttpGet("{id}/full")]
         public ActionResult<User> GetUserFull(int id)
         {

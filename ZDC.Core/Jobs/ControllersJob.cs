@@ -8,10 +8,12 @@ using Newtonsoft.Json.Linq;
 using Quartz;
 using Serilog;
 using ZDC.Core.Data;
+using ZDC.Core.Extensions;
 using ZDC.Models;
 
 namespace ZDC.Core.Jobs
 {
+    [DisallowConcurrentExecution]
     public class ControllersJob : IJob
     {
         private IConfiguration _configuration;
@@ -138,8 +140,7 @@ namespace ZDC.Core.Jobs
         {
             try
             {
-                foreach (var controller in _context.OnlineControllers.ToList())
-                    _context.OnlineControllers.Remove(controller);
+                _context.OnlineControllers.Clear();
 
                 await _context.SaveChangesAsync();
 
@@ -300,18 +301,19 @@ namespace ZDC.Core.Jobs
         {
             try
             {
-                foreach (var controller in controllers)
-                {
-                    var loa = controller.User.Loas
-                        .Where(x => x.Start <= DateTime.UtcNow)
-                        .Where(x => x.End >= DateTime.UtcNow)
-                        .FirstOrDefault(x => x.Status == LoaStatus.Started);
-                    if (loa == null) continue;
-                    controller.User.Status = UserStatus.Active;
-                    loa.Status = LoaStatus.Controlled;
-                    // todo send email
-                    await _context.SaveChangesAsync();
-                }
+                if (controllers != null)
+                    foreach (var controller in controllers)
+                    {
+                        var loa = controller.User.Loas
+                            .Where(x => x.Start <= DateTime.UtcNow)
+                            .Where(x => x.End >= DateTime.UtcNow)
+                            .FirstOrDefault(x => x.Status == LoaStatus.Started);
+                        if (loa == null) continue;
+                        controller.User.Status = UserStatus.Active;
+                        loa.Status = LoaStatus.Controlled;
+                        // todo send email
+                        await _context.SaveChangesAsync();
+                    }
             }
             catch (Exception ex)
             {

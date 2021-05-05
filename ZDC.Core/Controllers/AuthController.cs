@@ -1,45 +1,44 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using VATSIM.Connect.AspNetCore.Server.Authentication;
+using VATSIM.Connect.AspNetCore.Server.Controllers;
+using VATSIM.Connect.AspNetCore.Server.Options;
+using VATSIM.Connect.AspNetCore.Server.Services;
 using ZDC.Core.Data;
 
 namespace ZDC.Core.Controllers
 {
     [Route("api/[controller]")]
-    public class AuthController : Controller
+    public class AuthController : AuthControllerBase
     {
-        private readonly IConfiguration _config;
         private readonly ZdcContext _context;
+        private readonly VatsimServerOptions _vatsimOptions;
 
-        public AuthController(ZdcContext context, IConfiguration config)
+        public AuthController(IVatsimConnectService vatsimService, IJwtAuthManager jwtAuthManager,
+            IVatsimAuthenticationService authenticationService, IOptions<VatsimServerOptions> vatsimOptions,
+            ZdcContext context)
+            : base(vatsimService, jwtAuthManager, authenticationService)
         {
+            _vatsimOptions = vatsimOptions?.Value ?? throw new ArgumentNullException(nameof(vatsimOptions));
             _context = context;
-            _config = config;
         }
 
-        [HttpGet("Login/{code}")]
-        public async Task<ActionResult> Login(string code)
+        /// <summary>
+        ///     Redirects to VATSIM Connect authorization endpoint
+        /// </summary>
+        /// <returns>302 Found</returns>
+        [HttpGet("login")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status302Found)]
+        public async Task<IActionResult> RedirectToVatsimConnect()
         {
-            var data = new Dictionary<string, string>
-            {
-                {"grant_type", "authorization_code"},
-                {"client_id", _config.GetValue<string>("ConnectClientId")},
-                {"client_secret", _config.GetValue<string>("ConnectClientSecret")},
-                {"redirect_url", _config.GetValue<string>("ConnectRedirectUrl")},
-                {"code", code}
-            };
-
-            var content = new FormUrlEncodedContent(data);
-
-            using var httpClient = new HttpClient();
-            using var response = await httpClient.PostAsync("https://auth.vatsim.net/oauth/token/", content);
-
-            if (!response.IsSuccessStatusCode)
-                return Unauthorized($"Invalid login: {code}");
-
-            return Ok(response);
+            await Task.CompletedTask;
+            return Redirect(
+                $"{_vatsimOptions.VatsimTokenRequestOptions.VatsimAuthUri}/oauth/authorize?client_id={_vatsimOptions.VatsimTokenRequestOptions.ClientId}&redirect_uri={_vatsimOptions.VatsimTokenRequestOptions.RedirectUri}&response_type=code&scope=full_name+vatsim_details+email+country");
         }
     }
 }

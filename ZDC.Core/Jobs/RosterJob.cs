@@ -12,6 +12,7 @@ using ZDC.Models;
 
 namespace ZDC.Core.Jobs
 {
+    [DisallowConcurrentExecution]
     public class RosterJob : IJob
     {
         private IConfiguration _configuration;
@@ -70,13 +71,14 @@ namespace ZDC.Core.Jobs
                         rating = (UserRating) user.Value<int>("rating");
                     else
                         rating = UserRating.OBS;
+                    var certification = new Certification();
                     var joinDate = user.Value<DateTime>("facility_join");
                     var visitor = user.Value<string>("membership")?.Equals("visit") ?? false;
                     var visitorFrom = string.Empty;
                     if (visitor)
                         visitorFrom = user.Value<string>("facility");
 
-                    await _context.AddAsync(new User
+                    await _context.Users.AddAsync(new User
                     {
                         Id = cid,
                         LastName = lastName,
@@ -86,6 +88,7 @@ namespace ZDC.Core.Jobs
                         UserRating = rating,
                         Role = UserRole.None,
                         TrainingRole = TrainingRole.None,
+                        Certifications = certification,
                         Training = true,
                         Events = true,
                         Visitor = visitor,
@@ -95,6 +98,8 @@ namespace ZDC.Core.Jobs
                         Created = DateTime.UtcNow,
                         Updated = DateTime.UtcNow
                     });
+
+                    await _context.SaveChangesAsync();
                 }
         }
 

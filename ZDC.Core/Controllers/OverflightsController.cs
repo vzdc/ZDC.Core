@@ -19,7 +19,7 @@ namespace ZDC.Core.Controllers
         [HttpGet]
         public ActionResult<IList<Overflight>> GetOverflights()
         {
-            return Ok(_context.Overflights.ToList());
+            return Ok(_context.Overflights.OrderBy(x => x.Callsign).ToList());
         }
     }
 }

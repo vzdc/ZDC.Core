@@ -7,10 +7,12 @@ using Newtonsoft.Json.Linq;
 using Quartz;
 using Serilog;
 using ZDC.Core.Data;
+using ZDC.Core.Extensions;
 using ZDC.Models;
 
 namespace ZDC.Core.Jobs
 {
+    [DisallowConcurrentExecution]
     public class MetarJob : IJob
     {
         private IConfiguration _configuration;
@@ -30,7 +32,7 @@ namespace ZDC.Core.Jobs
         {
             var airports = _context.Airports.ToList();
 
-            foreach (var metar in _context.Metar.ToList()) _context.Metar.Remove(metar);
+            _context.Metar.Clear();
 
             foreach (var airport in airports)
             {
@@ -55,9 +57,9 @@ namespace ZDC.Core.Jobs
                         $"{json.SelectToken("altimeter.repr").ToString().Replace("A", "").Insert(2, ".")} inHg",
                     Temp = $"{json.SelectToken("temperature.repr")}"
                 };
-
-                await _context.SaveChangesAsync();
             }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Prometheus;
+using VATSIM.Connect.AspNetCore.Server.Extensions;
 using ZDC.Core.Data;
 
 namespace ZDC.Core
@@ -27,6 +28,8 @@ namespace ZDC.Core
 
             services.AddDbContext<ZdcContext>(options =>
                 options.UseNpgsql(Configuration.GetValue<string>("ConnectionString")));
+
+            services.AddVatsimConnect(Configuration.GetSection("VatsimServerOptions"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,13 +44,10 @@ namespace ZDC.Core
 
             app.UseMetricServer();
             app.UseHttpMetrics();
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
