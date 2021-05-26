@@ -41,6 +41,10 @@ namespace ZDC.Core
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ZDC.Core v1"));
             }
 
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
             app.UseMetricServer();
             app.UseHttpMetrics();
             app.UseHttpsRedirection();

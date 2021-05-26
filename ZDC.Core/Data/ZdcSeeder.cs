@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZDC.Models;
+using ZDC.Core.Models;
 
 namespace ZDC.Core.Data
 {

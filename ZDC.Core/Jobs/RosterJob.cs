@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using Quartz;
 using Serilog;
 using ZDC.Core.Data;
-using ZDC.Models;
+using ZDC.Core.Models;
 
 namespace ZDC.Core.Jobs
 {

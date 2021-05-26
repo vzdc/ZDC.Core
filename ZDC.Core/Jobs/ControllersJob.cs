@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Quartz;
 using Serilog;
 using ZDC.Core.Data;
 using ZDC.Core.Extensions;
-using ZDC.Models;
+using ZDC.Core.Models;
 
 namespace ZDC.Core.Jobs
 {
@@ -171,7 +172,7 @@ namespace ZDC.Core.Jobs
             {
                 var lastUpdated = _context.LastUpdated.FirstOrDefault()?.Time.AddMinutes(-1);
 
-                foreach (var log in _context.ControllerLogs
+                foreach (var log in _context.ControllerLogs.Include(x => x.User)
                     .AsQueryable()
                     .Where(x => x.Duration == 0.0).ToList())
                     if (log.Logout <= lastUpdated)
@@ -181,18 +182,18 @@ namespace ZDC.Core.Jobs
                         var length = logoff - login;
                         log.Duration = Math.Round(length.TotalHours, 3);
 
-                        var monthHours = _context.Hours
+                        log.User.Hours ??= new List<Hours>();
+
+                        var monthHours = log.User.Hours
                             .FirstOrDefault(
                                 x => x.Month == DateTime.UtcNow.Month
                                      && x.Year == DateTime.UtcNow.Year
-                                     && x.User.Id == log.User.Id
                             );
 
                         if (monthHours == null)
                         {
                             var hours = new Hours
                             {
-                                User = log.User,
                                 Year = DateTime.UtcNow.Year,
                                 Month = DateTime.UtcNow.Month
                             };
@@ -208,7 +209,7 @@ namespace ZDC.Core.Jobs
 
                             if (log.Position.Contains("CTR")) hours.CenterHours += log.Duration;
 
-                            await _context.Hours.AddAsync(hours);
+                            log.User.Hours.Add(hours);
 
                             await _context.SaveChangesAsync();
                         }

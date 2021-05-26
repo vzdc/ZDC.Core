@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ZDC.Core.Data;
-using ZDC.Models;
+using ZDC.Core.Models;
 
 namespace ZDC.Core.Controllers
 {

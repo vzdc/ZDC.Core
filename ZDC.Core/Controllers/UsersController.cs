@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Models;
+using ZDC.Core.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -34,6 +33,7 @@ namespace ZDC.Core.Controllers
                 .Include(x => x.Warnings)
                 .Include(x => x.DossierEntries)
                 .Include(x => x.Feedback)
+                .Include(x => x.Hours)
                 .OrderBy(x => x.LastName)
                 .ToList());
         }
@@ -70,6 +70,7 @@ namespace ZDC.Core.Controllers
                 .Include(x => x.Warnings)
                 .Include(x => x.DossierEntries)
                 .Include(x => x.Feedback)
+                .Include(x => x.Hours)
                 .FirstOrDefault(x => x.Id == id);
 
             if (user == null)
@@ -177,20 +178,6 @@ namespace ZDC.Core.Controllers
             return Ok(_context.OnlineControllers
                 .Include(x => x.User)
                 .ToList());
-        }
-
-        [HttpGet("top")]
-        public ActionResult<IList<Hours>> GetTopControllers()
-        {
-            return Ok(_context.Hours.ToList().Where(x => x.Month == DateTime.UtcNow.Month)
-                .Where(x => x.Year == DateTime.UtcNow.Year).OrderByDescending(x => x.TotalHours).Take(3).ToList());
-        }
-
-        [HttpGet("top/full")]
-        public ActionResult<IList<Hours>> GetTopControllersFull()
-        {
-            return Ok(_context.Hours.Include(x => x.User).ToList().Where(x => x.Month == DateTime.UtcNow.Month)
-                .Where(x => x.Year == DateTime.UtcNow.Year).OrderByDescending(x => x.TotalHours).Take(3).ToList());
         }
 
         [HttpPut("{id}")]

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using Quartz;
 using Serilog;
 using ZDC.Core.Data;
-using ZDC.Models;
+using ZDC.Core.Models;
 
 namespace ZDC.Core.Jobs
 {
@@ -48,7 +48,7 @@ namespace ZDC.Core.Jobs
                     Callsign = overflight.Value<string>("callsign"),
                     Departure = overflight.Value<string>("dep"),
                     Arrival = overflight.Value<string>("arr"),
-                    Route = overflight.Value<string>("route").Replace('+', ' ').TrimEnd().TrimStart(),
+                    Route = overflight.Value<string>("route")?.Replace('+', ' ').TrimEnd().TrimStart(),
                     Latitude = overflight.Value<string>("lat"),
                     Longitude = overflight.Value<string>("lon")
                 })
