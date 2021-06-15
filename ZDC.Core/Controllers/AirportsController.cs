@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -33,6 +34,7 @@ namespace ZDC.Core.Controllers
                 .FirstOrDefault(x => x.Id == id));
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAirport(int id, [FromBody] Airport data)
         {
@@ -48,6 +50,7 @@ namespace ZDC.Core.Controllers
             return Ok(airport);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> PostAirport([FromBody] Airport airport)
         {
@@ -60,6 +63,7 @@ namespace ZDC.Core.Controllers
             return Ok(airport);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAirport(int id)
         {

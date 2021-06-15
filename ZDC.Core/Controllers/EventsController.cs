@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -19,19 +20,15 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IList<Event>> GetEvents()
+        public ActionResult<IList<Event>> GetEvents(bool full = false)
         {
+            if (full)
+                return Ok(_context.Events
+                    .Include(x => x.Registrations).ToList());
             return Ok(_context.Events.ToList());
         }
 
-        [HttpGet("full")]
-        public ActionResult<IList<Event>> GetEventsFull()
-        {
-            return Ok(_context.Events
-                .Include(x => x.Registrations)
-                .ToList());
-        }
-
+        [Authorize]
         [HttpGet("{id}/Registrations")]
         public ActionResult<IList<EventRegistration>> GetEventRegistrations(int id)
         {
@@ -42,6 +39,7 @@ namespace ZDC.Core.Controllers
             return Ok(@event.Registrations);
         }
 
+        [Authorize]
         [HttpGet("{id}/Registrations/{registrationId}")]
         public ActionResult<EventRegistration> GetEventRegistration(int id, int registrationId)
         {
@@ -56,6 +54,7 @@ namespace ZDC.Core.Controllers
             return registration;
         }
 
+        [Authorize]
         [HttpGet("{id}/Positions")]
         public ActionResult<IList<EventPosition>> GetEventPositions(int id)
         {
@@ -66,6 +65,7 @@ namespace ZDC.Core.Controllers
             return Ok(@event.Positions);
         }
 
+        [Authorize]
         [HttpGet("{id}/Positions/{positionId}")]
         public ActionResult<EventPosition> GetEventPosition(int id, int positionId)
         {
@@ -80,6 +80,7 @@ namespace ZDC.Core.Controllers
             return position;
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> PutEvent(int id, [FromBody] Event data)
         {
@@ -95,6 +96,7 @@ namespace ZDC.Core.Controllers
             return Ok(@event);
         }
 
+        [Authorize]
         [HttpPut("{id}/Registration/{registrationId}")]
         public async Task<ActionResult> PutEventRegistration(int id, int registrationId,
             [FromBody] EventRegistration data)
@@ -116,6 +118,7 @@ namespace ZDC.Core.Controllers
             return Ok(registration);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> PostEvent([FromBody] Event @event)
         {
@@ -129,6 +132,7 @@ namespace ZDC.Core.Controllers
             return Ok(@event);
         }
 
+        [Authorize]
         [HttpPost("{id}/Registration")]
         public async Task<IActionResult> PostEventRegistration(int id, [FromBody] EventRegistration registration)
         {
@@ -147,6 +151,7 @@ namespace ZDC.Core.Controllers
             return Ok(registration);
         }
 
+        [Authorize]
         [HttpPut("{id}/Position")]
         public async Task<ActionResult> PostEventPosition(int id, [FromBody] EventPosition position)
         {
@@ -165,6 +170,7 @@ namespace ZDC.Core.Controllers
             return Ok(position);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteEvent(int id)
         {
@@ -180,6 +186,7 @@ namespace ZDC.Core.Controllers
             return Ok(@event);
         }
 
+        [Authorize]
         [HttpDelete("{id}/Registration/{registrationId}")]
         public async Task<ActionResult> DeleteEventRegistration(int id, int registrationId)
         {
@@ -200,6 +207,7 @@ namespace ZDC.Core.Controllers
             return Ok(registration);
         }
 
+        [Authorize]
         [HttpDelete("{id}/Position/{positionId}")]
         public async Task<ActionResult> DeleteEventPosition(int id, int positionId)
         {

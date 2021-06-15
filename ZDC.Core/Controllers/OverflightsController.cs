@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {

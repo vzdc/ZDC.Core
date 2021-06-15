@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZDC.Core.Data;
@@ -9,9 +10,10 @@ using ZDC.Core.Data;
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    partial class ZdcContextModelSnapshot : ModelSnapshot
+    [Migration("20210614221247_AddPositions")]
+    partial class AddPositions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -404,6 +406,21 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Hours");
                 });
 
+            modelBuilder.Entity("ZDC.Models.LastUpdated", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LastUpdated");
+                });
+
             modelBuilder.Entity("ZDC.Models.Loa", b =>
                 {
                     b.Property<int>("Id")
@@ -529,29 +546,6 @@ namespace ZDC.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Overflights");
-                });
-
-            modelBuilder.Entity("ZDC.Models.Permission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("RoleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("View")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("Permission");
                 });
 
             modelBuilder.Entity("ZDC.Models.Position", b =>
@@ -699,9 +693,6 @@ namespace ZDC.Core.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("Currency")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
@@ -878,13 +869,6 @@ namespace ZDC.Core.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ZDC.Models.Permission", b =>
-                {
-                    b.HasOne("ZDC.Models.Role", null)
-                        .WithMany("Permissions")
-                        .HasForeignKey("RoleId");
-                });
-
             modelBuilder.Entity("ZDC.Models.TrainingTicket", b =>
                 {
                     b.HasOne("ZDC.Models.User", "Student")
@@ -921,11 +905,6 @@ namespace ZDC.Core.Migrations
                     b.Navigation("Positions");
 
                     b.Navigation("Registrations");
-                });
-
-            modelBuilder.Entity("ZDC.Models.Role", b =>
-                {
-                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("ZDC.Models.User", b =>

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -19,29 +20,43 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IList<User>> GetUsers()
+        public ActionResult<IList<User>> GetUsers(bool full)
         {
+            if (full)
+                return Ok(_context.Users
+                    .Include(x => x.Certifications)
+                    .Include(x => x.Loas)
+                    .Include(x => x.Warnings)
+                    .Include(x => x.DossierEntries)
+                    .Include(x => x.Feedback)
+                    .Include(x => x.Hours)
+                    .OrderBy(x => x.LastName)
+                    .ToList());
             return Ok(_context.Users.OrderBy(x => x.LastName).ToList());
         }
 
-        [HttpGet("full")]
-        public ActionResult<IList<User>> GetUsersFull()
-        {
-            return Ok(_context.Users
-                .Include(x => x.Certifications)
-                .Include(x => x.Loas)
-                .Include(x => x.Warnings)
-                .Include(x => x.DossierEntries)
-                .Include(x => x.Feedback)
-                .Include(x => x.Hours)
-                .OrderBy(x => x.LastName)
-                .ToList());
-        }
-
         [HttpGet("{id}")]
-        public ActionResult<User> GetUser(int id)
+        public ActionResult<User> GetUser(int id, bool full = false)
         {
-            var user = _context.Users.Find(id);
+            User user;
+            if (full)
+            {
+                user = _context.Users
+                    .Include(x => x.Certifications)
+                    .Include(x => x.Loas)
+                    .Include(x => x.Warnings)
+                    .Include(x => x.DossierEntries)
+                    .Include(x => x.Feedback)
+                    .Include(x => x.Hours)
+                    .FirstOrDefault(x => x.Id == id);
+
+                if (user == null)
+                    return NotFound($"User: {id} not found");
+
+                return Ok(user);
+            }
+
+            user = _context.Users.Find(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
@@ -52,31 +67,7 @@ namespace ZDC.Core.Controllers
         [HttpGet("Staff")]
         public ActionResult<IList<User>> GetStaff()
         {
-            return Ok(_context.Users.Where(x => x.Role != UserRole.None).ToList());
-        }
-
-        [HttpGet("Trainingstaff")]
-        public ActionResult<IList<User>> GetTrainingStaff()
-        {
-            return Ok(_context.Users.Where(x => x.TrainingRole != TrainingRole.None).ToList());
-        }
-
-        [HttpGet("{id}/full")]
-        public ActionResult<User> GetUserFull(int id)
-        {
-            var user = _context.Users
-                .Include(x => x.Certifications)
-                .Include(x => x.Loas)
-                .Include(x => x.Warnings)
-                .Include(x => x.DossierEntries)
-                .Include(x => x.Feedback)
-                .Include(x => x.Hours)
-                .FirstOrDefault(x => x.Id == id);
-
-            if (user == null)
-                return NotFound($"User: {id} not found");
-
-            return Ok(user);
+            return Ok(_context.Users.Where(x => x.Roles.Any()).ToList());
         }
 
         [HttpGet("{id}/Certification")]
@@ -92,6 +83,7 @@ namespace ZDC.Core.Controllers
             return Ok(user.Certifications);
         }
 
+        [Authorize]
         [HttpGet("{id}/Loas")]
         public ActionResult<IList<Loa>> GetLoas(int id)
         {
@@ -105,6 +97,7 @@ namespace ZDC.Core.Controllers
             return Ok(user.Loas);
         }
 
+        [Authorize]
         [HttpGet("{id}/Warnings")]
         public ActionResult<IList<Warning>> GetWarnings(int id)
         {
@@ -118,6 +111,7 @@ namespace ZDC.Core.Controllers
             return Ok(user.Warnings);
         }
 
+        [Authorize]
         [HttpGet("{id}/DossierEntries")]
         public ActionResult<IList<Dossier>> GetDossierEntries(int id)
         {
@@ -131,6 +125,7 @@ namespace ZDC.Core.Controllers
             return Ok(user.DossierEntries);
         }
 
+        [Authorize]
         [HttpGet("{id}/Feedback")]
         public ActionResult<IList<Feedback>> GetFeedback(int id)
         {
@@ -144,42 +139,16 @@ namespace ZDC.Core.Controllers
             return Ok(user.Feedback);
         }
 
-        [HttpGet("{id}/Role")]
-        public ActionResult<UserRole> GetRole(int id)
-        {
-            var user = _context.Users.Find(id);
-
-            if (user == null)
-                return NotFound($"User: {id} not found");
-
-            return Ok(user.Role);
-        }
-
-        [HttpGet("{id}/TrainingRole")]
-        public ActionResult<TrainingRole> GetTrainingRole(int id)
-        {
-            var user = _context.Users.Find(id);
-
-            if (user == null)
-                return NotFound($"User: {id} not found");
-
-            return Ok(user.TrainingRole);
-        }
-
         [HttpGet("Online")]
-        public ActionResult<IList<OnlineController>> GetOnlineControllers()
+        public ActionResult<IList<OnlineController>> GetOnlineControllers(bool full = false)
         {
+            if (full)
+                return Ok(_context.OnlineControllers
+                    .Include(x => x.User).ToList());
             return Ok(_context.OnlineControllers.ToList());
         }
 
-        [HttpGet("Online/full")]
-        public ActionResult<IList<OnlineController>> GetOnlineControllersFull()
-        {
-            return Ok(_context.OnlineControllers
-                .Include(x => x.User)
-                .ToList());
-        }
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> PutUser(int id, [FromBody] User data)
         {
@@ -195,6 +164,7 @@ namespace ZDC.Core.Controllers
             return Ok(user);
         }
 
+        [Authorize]
         [HttpPut("{id}/Loa/{loaId}")]
         public async Task<ActionResult> PutLoa(int id, int loaId, [FromBody] Loa data)
         {
@@ -215,6 +185,7 @@ namespace ZDC.Core.Controllers
             return Ok(loa);
         }
 
+        [Authorize]
         [HttpPut("{id}/Warning/{warningId}")]
         public async Task<ActionResult> PutWarning(int id, int warningId, [FromBody] Warning data)
         {
@@ -235,6 +206,7 @@ namespace ZDC.Core.Controllers
             return Ok(warning);
         }
 
+        [Authorize]
         [HttpPut("{id}/DossierEntry/{dossierId}")]
         public async Task<ActionResult> PutDossierEntry(int id, int dossierId, [FromBody] Dossier data)
         {
@@ -255,6 +227,7 @@ namespace ZDC.Core.Controllers
             return Ok(dossier);
         }
 
+        [Authorize]
         [HttpPut("{id}/Feedback/{feedbackId}")]
         public async Task<ActionResult> PutDossierEntry(int id, int feedbackId, [FromBody] Feedback data)
         {
@@ -275,36 +248,28 @@ namespace ZDC.Core.Controllers
             return Ok(feedback);
         }
 
+        [Authorize]
         [HttpPut("{id}/Role")]
-        public async Task<ActionResult> PutRole(int id, [FromBody] UserRole role)
+        public async Task<ActionResult> PutRole(int id, [FromBody] Role entry)
         {
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
                 return NotFound($"User: {id} not found");
 
-            user.Role = role;
+            var role = await _context.Roles.FindAsync(entry.Id);
+
+            if (role == null)
+                return NotFound($"Role: {entry.Name} not found");
+
+            user.Roles.Add(role);
 
             await _context.SaveChangesAsync();
 
             return Ok(user);
         }
 
-        [HttpPut("{id}/TrainingRole")]
-        public async Task<ActionResult> PutTrainingRole(int id, [FromBody] TrainingRole role)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-                return NotFound($"User: {id} not found");
-
-            user.TrainingRole = role;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(user);
-        }
-
+        [Authorize]
         [HttpPost("{id}/Loa")]
         public async Task<ActionResult> PostLoa(int id, [FromBody] Loa loa)
         {
@@ -323,6 +288,7 @@ namespace ZDC.Core.Controllers
             return Ok(loa);
         }
 
+        [Authorize]
         [HttpPost("{id}/Warning")]
         public async Task<ActionResult> PostWarning(int id, [FromBody] Warning warning)
         {
@@ -341,6 +307,7 @@ namespace ZDC.Core.Controllers
             return Ok(warning);
         }
 
+        [Authorize]
         [HttpPost("{id}/DossierEntry")]
         public async Task<ActionResult> PostDossierEntry(int id, [FromBody] Dossier dossier)
         {
@@ -359,6 +326,7 @@ namespace ZDC.Core.Controllers
             return Ok(dossier);
         }
 
+        [Authorize]
         [HttpPost("{id}/Feedback")]
         public async Task<ActionResult> PostFeedback(int id, [FromBody] Feedback feedback)
         {
@@ -377,21 +345,7 @@ namespace ZDC.Core.Controllers
             return Ok(feedback);
         }
 
-        [HttpPost("{id}/Roles")]
-        public async Task<ActionResult> PostRole(int id, [FromBody] UserRole data)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-                return NotFound($"User: {id} not found");
-
-            user.Role = data;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(data);
-        }
-
+        [Authorize]
         [HttpDelete("{id}/Loas/{loaId}")]
         public async Task<ActionResult> DeleteLoa(int id, int loaId)
         {
@@ -412,6 +366,7 @@ namespace ZDC.Core.Controllers
             return Ok(loa);
         }
 
+        [Authorize]
         [HttpDelete("{id}/Warnings/{warningId}")]
         public async Task<ActionResult> DeleteWarning(int id, int warningId)
         {
@@ -432,6 +387,7 @@ namespace ZDC.Core.Controllers
             return Ok(warning);
         }
 
+        [Authorize]
         [HttpDelete("{id}/Feedback/{feedbackId}")]
         public async Task<ActionResult> DeleteFeedback(int id, int feedbackId)
         {
@@ -452,6 +408,7 @@ namespace ZDC.Core.Controllers
             return Ok(feedback);
         }
 
+        [Authorize]
         [HttpDelete("{id}/Roles/{roleId}")]
         public async Task<ActionResult> DeleteRole(int id, int roleId)
         {

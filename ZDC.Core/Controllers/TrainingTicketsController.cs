@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class TrainingTicketsController : Controller
     {
@@ -19,41 +21,36 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IList<TrainingTicket>> GetTrainingTickets()
+        public ActionResult<IList<TrainingTicket>> GetTrainingTickets(bool full = false)
         {
+            if (full)
+                return Ok(_context.TrainingTickets
+                    .Include(x => x.Student)
+                    .Include(x => x.Trainer).ToList());
             return Ok(_context.TrainingTickets.ToList());
         }
 
-        [HttpGet("full")]
-        public ActionResult<IList<TrainingTicket>> GetTrainingTicketsFull()
-        {
-            return Ok(_context.TrainingTickets
-                .Include(x => x.Student)
-                .Include(x => x.Trainer)
-                .ToList());
-        }
-
         [HttpGet("{id}")]
-        public ActionResult<TrainingTicket> GetTrainingTicket(int id)
+        public ActionResult<TrainingTicket> GetTrainingTicket(int id, bool full = false)
         {
-            var ticket = _context.TrainingTickets.Find(id);
+            TrainingTicket ticket;
+            if (full)
+            {
+                ticket = _context.TrainingTickets
+                    .Include(x => x.Student)
+                    .Include(x => x.Trainer)
+                    .FirstOrDefault(x => x.Id == id);
+
+                if (ticket == null)
+                    return NotFound($"Training ticket: {id} not found");
+
+                return Ok(ticket);
+            }
+
+            ticket = _context.TrainingTickets.Find(id);
 
             if (ticket == null)
                 return NotFound($"Training ticket: {id} not found");
-
-            return Ok(ticket);
-        }
-
-        [HttpGet("{id}/full")]
-        public ActionResult<TrainingTicket> GetTrainingTicketFull(int id)
-        {
-            var ticket = _context.TrainingTickets
-                .Include(x => x.Student)
-                .Include(x => x.Trainer)
-                .FirstOrDefault(x => x.Id == id);
-
-            if (ticket == null)
-                return NotFound($"Ticket: {id} not found");
 
             return Ok(ticket);
         }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Data
 {
@@ -14,11 +14,11 @@ namespace ZDC.Core.Data
         public DbSet<BugReport> BugReports { get; set; }
         public DbSet<ControllerLog> ControllerLogs { get; set; }
         public DbSet<Event> Events { get; set; }
-        public DbSet<Facility> Facilities { get; set; }
-        public DbSet<LastUpdated> LastUpdated { get; set; }
         public DbSet<Metar> Metar { get; set; }
         public DbSet<OnlineController> OnlineControllers { get; set; }
         public DbSet<Overflight> Overflights { get; set; }
+        public DbSet<Position> Positions { get; set; }
+        public DbSet<Role> Roles { get; set; }
         public DbSet<StaffingRequest> StaffingRequests { get; set; }
         public DbSet<TrainingTicket> TrainingTickets { get; set; }
         public DbSet<User> Users { get; set; }

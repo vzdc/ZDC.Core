@@ -1,12 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using ZDC.Core.Data;
-using ZDC.Core.Jobs;
 
 namespace ZDC.Core
 {
@@ -29,13 +27,8 @@ namespace ZDC.Core
                 var scope = host.Services.CreateScope();
                 var services = scope.ServiceProvider;
                 var context = services.GetRequiredService<ZdcContext>();
-                var config = services.GetService<IConfiguration>();
 
                 ZdcSeeder.SeedDatabase(context);
-
-                var jobs = new JobService(context, config);
-
-                jobs.StartJobs();
 
                 host.Run();
             }
@@ -52,11 +45,11 @@ namespace ZDC.Core
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseSerilog()
+                //.UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://localhost:5000");
+                    //webBuilder.UseUrls("http://localhost:5000");
                 });
         }
     }

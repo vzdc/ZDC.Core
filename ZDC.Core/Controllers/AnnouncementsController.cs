@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
-using ZDC.Core.Models;
+using ZDC.Models;
 
 namespace ZDC.Core.Controllers
 {
@@ -19,33 +20,35 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IList<Announcement>> GetAnnouncements()
+        public ActionResult<IList<Announcement>> GetAnnouncements(bool full = false)
         {
+            if (full)
+                return Ok(_context.Announcements
+                    .Include(x => x.User).ToList());
             return Ok(_context.Announcements.ToList());
         }
 
-        [HttpGet("full")]
-        public ActionResult<IList<Announcement>> GetAnnouncementsFull()
-        {
-            return Ok(_context.Announcements
-                .Include(x => x.User)
-                .ToList());
-        }
-
         [HttpGet("{id}")]
-        public ActionResult<Announcement> GetAnnouncement(int id)
+        public ActionResult<Announcement> GetAnnouncement(int id, bool full = false)
         {
-            return Ok(_context.Announcements.Find(id));
+            Announcement announcement;
+            if (full)
+            {
+                announcement = _context.Announcements
+                    .Include(x => x.User)
+                    .FirstOrDefault(x => x.Id == id);
+                if (announcement == null)
+                    return NotFound($"Announcement: {id} not found");
+                return Ok(announcement);
+            }
+
+            announcement = _context.Announcements.Find(id);
+            if (announcement == null)
+                return NotFound($"Announcement: {id} not found");
+            return Ok(announcement);
         }
 
-        [HttpGet("{id}/full")]
-        public ActionResult<Announcement> GetAnnouncementFull(int id)
-        {
-            return Ok(_context.Announcements
-                .Include(x => x.User)
-                .FirstOrDefault(x => x.Id == id));
-        }
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAnnouncement(int id, [FromBody] Announcement data)
         {
@@ -60,6 +63,7 @@ namespace ZDC.Core.Controllers
             return Ok(announcement);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> PostAnnouncement([FromBody] Announcement announcement)
         {
@@ -72,6 +76,7 @@ namespace ZDC.Core.Controllers
             return Ok(announcement);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAnnouncement(int id)
         {
