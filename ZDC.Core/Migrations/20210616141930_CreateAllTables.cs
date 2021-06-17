@@ -4,10 +4,29 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ZDC.Core.Migrations
 {
-    public partial class CreateTables : Migration
+    public partial class CreateAllTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "BugReports",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Cid = table.Column<int>(type: "integer", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BugReports", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Certification",
                 columns: table => new
@@ -16,7 +35,10 @@ namespace ZDC.Core.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Ground = table.Column<int>(type: "integer", nullable: false),
                     Tower = table.Column<int>(type: "integer", nullable: false),
-                    Approach = table.Column<int>(type: "integer", nullable: false),
+                    MinorApproach = table.Column<int>(type: "integer", nullable: false),
+                    Chesapeake = table.Column<int>(type: "integer", nullable: false),
+                    MountVernon = table.Column<int>(type: "integer", nullable: false),
+                    Shenandoah = table.Column<int>(type: "integer", nullable: false),
                     Center = table.Column<int>(type: "integer", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
@@ -24,6 +46,19 @@ namespace ZDC.Core.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Certification", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventPositionPresets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PositionsRaw = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventPositionPresets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -48,39 +83,6 @@ namespace ZDC.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Hours",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Year = table.Column<int>(type: "integer", nullable: false),
-                    Month = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    LocalHours = table.Column<double>(type: "double precision", nullable: false),
-                    TraconHours = table.Column<double>(type: "double precision", nullable: false),
-                    CenterHours = table.Column<double>(type: "double precision", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hours", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LastUpdated",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LastUpdated", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Metar",
                 columns: table => new
                 {
@@ -99,6 +101,75 @@ namespace ZDC.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Overflights",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Callsign = table.Column<string>(type: "text", nullable: true),
+                    Departure = table.Column<string>(type: "text", nullable: true),
+                    Arrival = table.Column<string>(type: "text", nullable: true),
+                    Route = table.Column<string>(type: "text", nullable: true),
+                    Latitude = table.Column<string>(type: "text", nullable: true),
+                    Longitude = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Overflights", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Positions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Level = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Positions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Settings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Hours = table.Column<int>(type: "integer", nullable: false),
+                    Trainings = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Settings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StaffingRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Cid = table.Column<int>(type: "integer", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    Affiliation = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Start = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    End = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StaffingRequests", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -110,11 +181,10 @@ namespace ZDC.Core.Migrations
                     Email = table.Column<string>(type: "text", nullable: true),
                     UserRating = table.Column<int>(type: "integer", nullable: false),
                     CertificationsId = table.Column<int>(type: "integer", nullable: true),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    TrainingRole = table.Column<int>(type: "integer", nullable: false),
                     Training = table.Column<bool>(type: "boolean", nullable: false),
                     Events = table.Column<bool>(type: "boolean", nullable: false),
                     Visitor = table.Column<bool>(type: "boolean", nullable: false),
+                    Currency = table.Column<bool>(type: "boolean", nullable: false),
                     VisitorFrom = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Joined = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -139,8 +209,7 @@ namespace ZDC.Core.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Position = table.Column<string>(type: "text", nullable: true),
-                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
                     EventId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -155,30 +224,6 @@ namespace ZDC.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventRegistration",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Position = table.Column<string>(type: "text", nullable: true),
-                    Start = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    End = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EventId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventRegistration", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EventRegistration_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Airports",
                 columns: table => new
                 {
@@ -186,7 +231,7 @@ namespace ZDC.Core.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Icao = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    MetarId = table.Column<int>(type: "integer", nullable: true),
+                    MetarId = table.Column<int>(type: "integer", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -198,7 +243,7 @@ namespace ZDC.Core.Migrations
                         column: x => x.MetarId,
                         principalTable: "Metar",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,7 +252,7 @@ namespace ZDC.Core.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    SubmitterId = table.Column<int>(type: "integer", nullable: true),
                     Title = table.Column<string>(type: "text", nullable: true),
                     Text = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -217,8 +262,8 @@ namespace ZDC.Core.Migrations
                 {
                     table.PrimaryKey("PK_Announcements", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Announcements_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Announcements_Users_SubmitterId",
+                        column: x => x.SubmitterId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -251,23 +296,23 @@ namespace ZDC.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dossier",
+                name: "EventRegistrations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SubmitterId = table.Column<int>(type: "integer", nullable: true),
-                    Text = table.Column<string>(type: "text", nullable: true),
-                    Confidential = table.Column<bool>(type: "boolean", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    Start = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    End = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dossier", x => x.Id);
+                    table.PrimaryKey("PK_EventRegistrations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Dossier_Users_SubmitterId",
-                        column: x => x.SubmitterId,
+                        name: "FK_EventRegistrations_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -302,25 +347,25 @@ namespace ZDC.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Loa",
+                name: "Loas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
                     MoreInfo = table.Column<string>(type: "text", nullable: true),
                     Start = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     End = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Loa", x => x.Id);
+                    table.PrimaryKey("PK_Loas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Loa_Users_UserId",
+                        name: "FK_Loas_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -336,7 +381,7 @@ namespace ZDC.Core.Migrations
                     Position = table.Column<string>(type: "text", nullable: true),
                     Frequency = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<int>(type: "integer", nullable: true),
-                    Online = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    Online = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -344,6 +389,64 @@ namespace ZDC.Core.Migrations
                     table.PrimaryKey("PK_OnlineControllers", x => x.Id);
                     table.ForeignKey(
                         name: "FK_OnlineControllers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ots",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    RecommendedById = table.Column<int>(type: "integer", nullable: true),
+                    InstructorId = table.Column<int>(type: "integer", nullable: true),
+                    Position = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ots", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ots_Users_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Ots_Users_RecommendedById",
+                        column: x => x.RecommendedById,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Ots_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    NameLong = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Roles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -388,24 +491,24 @@ namespace ZDC.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Warning",
+                name: "Warnings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: true),
                     Reason = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Month = table.Column<int>(type: "integer", nullable: false),
                     Year = table.Column<int>(type: "integer", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Warning", x => x.Id);
+                    table.PrimaryKey("PK_Warnings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Warning_Users_UserId",
+                        name: "FK_Warnings_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -418,9 +521,9 @@ namespace ZDC.Core.Migrations
                 column: "MetarId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Announcements_UserId",
+                name: "IX_Announcements_SubmitterId",
                 table: "Announcements",
-                column: "UserId");
+                column: "SubmitterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ControllerLogs_UserId",
@@ -428,19 +531,14 @@ namespace ZDC.Core.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dossier_SubmitterId",
-                table: "Dossier",
-                column: "SubmitterId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_EventPosition_EventId",
                 table: "EventPosition",
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EventRegistration_EventId",
-                table: "EventRegistration",
-                column: "EventId");
+                name: "IX_EventRegistrations_UserId",
+                table: "EventRegistrations",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Feedback_UserId",
@@ -448,13 +546,33 @@ namespace ZDC.Core.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Loa_UserId",
-                table: "Loa",
+                name: "IX_Loas_UserId",
+                table: "Loas",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OnlineControllers_UserId",
                 table: "OnlineControllers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ots_InstructorId",
+                table: "Ots",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ots_RecommendedById",
+                table: "Ots",
+                column: "RecommendedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ots_UserId",
+                table: "Ots",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_UserId",
+                table: "Roles",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -473,8 +591,8 @@ namespace ZDC.Core.Migrations
                 column: "CertificationsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Warning_UserId",
-                table: "Warning",
+                name: "IX_Warnings_UserId",
+                table: "Warnings",
                 column: "UserId");
         }
 
@@ -487,37 +605,52 @@ namespace ZDC.Core.Migrations
                 name: "Announcements");
 
             migrationBuilder.DropTable(
-                name: "ControllerLogs");
+                name: "BugReports");
 
             migrationBuilder.DropTable(
-                name: "Dossier");
+                name: "ControllerLogs");
 
             migrationBuilder.DropTable(
                 name: "EventPosition");
 
             migrationBuilder.DropTable(
-                name: "EventRegistration");
+                name: "EventPositionPresets");
+
+            migrationBuilder.DropTable(
+                name: "EventRegistrations");
 
             migrationBuilder.DropTable(
                 name: "Feedback");
 
             migrationBuilder.DropTable(
-                name: "Hours");
-
-            migrationBuilder.DropTable(
-                name: "LastUpdated");
-
-            migrationBuilder.DropTable(
-                name: "Loa");
+                name: "Loas");
 
             migrationBuilder.DropTable(
                 name: "OnlineControllers");
 
             migrationBuilder.DropTable(
+                name: "Ots");
+
+            migrationBuilder.DropTable(
+                name: "Overflights");
+
+            migrationBuilder.DropTable(
+                name: "Positions");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "Settings");
+
+            migrationBuilder.DropTable(
+                name: "StaffingRequests");
+
+            migrationBuilder.DropTable(
                 name: "TrainingTickets");
 
             migrationBuilder.DropTable(
-                name: "Warning");
+                name: "Warnings");
 
             migrationBuilder.DropTable(
                 name: "Metar");

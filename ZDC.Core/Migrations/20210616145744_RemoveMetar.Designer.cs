@@ -10,23 +10,29 @@ using ZDC.Core.Data;
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    [Migration("20210528145243_UpdateEventPositions")]
-    partial class UpdateEventPositions
+    [Migration("20210616145744_RemoveMetar")]
+    partial class RemoveMetar
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            modelBuilder.Entity("ZDC.Core.Models.Airport", b =>
+            modelBuilder.Entity("ZDC.Models.Airport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Altimeter")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Conditions")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
@@ -34,23 +40,27 @@ namespace ZDC.Core.Migrations
                     b.Property<string>("Icao")
                         .HasColumnType("text");
 
-                    b.Property<int?>("MetarId")
-                        .HasColumnType("integer");
+                    b.Property<string>("MetarRaw")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Temp")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Wind")
+                        .HasColumnType("text");
 
-                    b.HasIndex("MetarId");
+                    b.HasKey("Id");
 
                     b.ToTable("Airports");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Announcement", b =>
+            modelBuilder.Entity("ZDC.Models.Announcement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,6 +69,9 @@ namespace ZDC.Core.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("SubmitterId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Text")
                         .HasColumnType("text");
@@ -69,22 +82,22 @@ namespace ZDC.Core.Migrations
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SubmitterId");
 
                     b.ToTable("Announcements");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.BugReport", b =>
+            modelBuilder.Entity("ZDC.Models.BugReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("Cid")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
@@ -109,7 +122,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("BugReports");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Certification", b =>
+            modelBuilder.Entity("ZDC.Models.Certification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,7 +161,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Certification");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.ControllerLog", b =>
+            modelBuilder.Entity("ZDC.Models.ControllerLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -186,36 +199,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("ControllerLogs");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Dossier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<bool>("Confidential")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("SubmitterId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubmitterId");
-
-                    b.ToTable("Dossier");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Event", b =>
+            modelBuilder.Entity("ZDC.Models.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -254,7 +238,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.EventPosition", b =>
+            modelBuilder.Entity("ZDC.Models.EventPosition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -277,7 +261,22 @@ namespace ZDC.Core.Migrations
                     b.ToTable("EventPosition");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.EventRegistration", b =>
+            modelBuilder.Entity("ZDC.Models.EventPositionPreset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("PositionsRaw")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EventPositionPresets");
+                });
+
+            modelBuilder.Entity("ZDC.Models.EventRegistration", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -290,44 +289,23 @@ namespace ZDC.Core.Migrations
                     b.Property<DateTime>("End")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("EventId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Position")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("EventRegistration");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Facility", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Online")
-                        .HasColumnType("boolean");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Facilities");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventRegistrations");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Feedback", b =>
+            modelBuilder.Entity("ZDC.Models.Feedback", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -371,7 +349,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Feedback");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Hours", b =>
+            modelBuilder.Entity("ZDC.Models.Hours", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,22 +387,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Hours");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.LastUpdated", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LastUpdated");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Loa", b =>
+            modelBuilder.Entity("ZDC.Models.Loa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -459,40 +422,10 @@ namespace ZDC.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Loa");
+                    b.ToTable("Loas");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Metar", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Altimeter")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Conditions")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("MetarRaw")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Temp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Wind")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Metar");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.OnlineController", b =>
+            modelBuilder.Entity("ZDC.Models.OnlineController", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -521,7 +454,46 @@ namespace ZDC.Core.Migrations
                     b.ToTable("OnlineControllers");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Overflight", b =>
+            modelBuilder.Entity("ZDC.Models.Ots", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("InstructorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Position")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RecommendedById")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstructorId");
+
+                    b.HasIndex("RecommendedById");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Ots");
+                });
+
+            modelBuilder.Entity("ZDC.Models.Overflight", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -551,7 +523,66 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Overflights");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.StaffingRequest", b =>
+            modelBuilder.Entity("ZDC.Models.Position", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Positions");
+                });
+
+            modelBuilder.Entity("ZDC.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameLong")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("ZDC.Models.Settings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("Hours")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Trainings")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
+                });
+
+            modelBuilder.Entity("ZDC.Models.StaffingRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -560,6 +591,9 @@ namespace ZDC.Core.Migrations
 
                     b.Property<string>("Affiliation")
                         .HasColumnType("text");
+
+                    b.Property<int>("Cid")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
@@ -593,7 +627,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("StaffingRequests");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.TrainingTicket", b =>
+            modelBuilder.Entity("ZDC.Models.TrainingTicket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -648,7 +682,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("TrainingTickets");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.User", b =>
+            modelBuilder.Entity("ZDC.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -660,6 +694,9 @@ namespace ZDC.Core.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Currency")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
@@ -679,17 +716,11 @@ namespace ZDC.Core.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<bool>("Training")
                         .HasColumnType("boolean");
-
-                    b.Property<int>("TrainingRole")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp without time zone");
@@ -710,7 +741,7 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Warning", b =>
+            modelBuilder.Entity("ZDC.Models.Warning", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -742,98 +773,114 @@ namespace ZDC.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Warning");
+                    b.ToTable("Warnings");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Airport", b =>
+            modelBuilder.Entity("ZDC.Models.Announcement", b =>
                 {
-                    b.HasOne("ZDC.Core.Models.Metar", "Metar")
+                    b.HasOne("ZDC.Models.User", "Submitter")
                         .WithMany()
-                        .HasForeignKey("MetarId");
-
-                    b.Navigation("Metar");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Announcement", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.ControllerLog", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Dossier", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", "Submitter")
-                        .WithMany("DossierEntries")
                         .HasForeignKey("SubmitterId");
 
                     b.Navigation("Submitter");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.EventPosition", b =>
+            modelBuilder.Entity("ZDC.Models.ControllerLog", b =>
                 {
-                    b.HasOne("ZDC.Core.Models.Event", null)
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZDC.Models.EventPosition", b =>
+                {
+                    b.HasOne("ZDC.Models.Event", null)
                         .WithMany("Positions")
                         .HasForeignKey("EventId");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.EventRegistration", b =>
+            modelBuilder.Entity("ZDC.Models.EventRegistration", b =>
                 {
-                    b.HasOne("ZDC.Core.Models.Event", null)
-                        .WithMany("Registrations")
-                        .HasForeignKey("EventId");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Feedback", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", "User")
-                        .WithMany("Feedback")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Hours", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", null)
-                        .WithMany("Hours")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.Loa", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", null)
-                        .WithMany("Loas")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("ZDC.Core.Models.OnlineController", b =>
-                {
-                    b.HasOne("ZDC.Core.Models.User", "User")
+                    b.HasOne("ZDC.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.TrainingTicket", b =>
+            modelBuilder.Entity("ZDC.Models.Feedback", b =>
                 {
-                    b.HasOne("ZDC.Core.Models.User", "Student")
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZDC.Models.Hours", b =>
+                {
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZDC.Models.Loa", b =>
+                {
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZDC.Models.OnlineController", b =>
+                {
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZDC.Models.Ots", b =>
+                {
+                    b.HasOne("ZDC.Models.User", "Instructor")
+                        .WithMany()
+                        .HasForeignKey("InstructorId");
+
+                    b.HasOne("ZDC.Models.User", "RecommendedBy")
+                        .WithMany()
+                        .HasForeignKey("RecommendedById");
+
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Instructor");
+
+                    b.Navigation("RecommendedBy");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZDC.Models.Role", b =>
+                {
+                    b.HasOne("ZDC.Models.User", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("ZDC.Models.TrainingTicket", b =>
+                {
+                    b.HasOne("ZDC.Models.User", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId");
 
-                    b.HasOne("ZDC.Core.Models.User", "Trainer")
+                    b.HasOne("ZDC.Models.User", "Trainer")
                         .WithMany()
                         .HasForeignKey("TrainerId");
 
@@ -842,40 +889,32 @@ namespace ZDC.Core.Migrations
                     b.Navigation("Trainer");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.User", b =>
+            modelBuilder.Entity("ZDC.Models.User", b =>
                 {
-                    b.HasOne("ZDC.Core.Models.Certification", "Certifications")
+                    b.HasOne("ZDC.Models.Certification", "Certifications")
                         .WithMany()
                         .HasForeignKey("CertificationsId");
 
                     b.Navigation("Certifications");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Warning", b =>
+            modelBuilder.Entity("ZDC.Models.Warning", b =>
                 {
-                    b.HasOne("ZDC.Core.Models.User", null)
-                        .WithMany("Warnings")
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.Event", b =>
+            modelBuilder.Entity("ZDC.Models.Event", b =>
                 {
                     b.Navigation("Positions");
-
-                    b.Navigation("Registrations");
                 });
 
-            modelBuilder.Entity("ZDC.Core.Models.User", b =>
+            modelBuilder.Entity("ZDC.Models.User", b =>
                 {
-                    b.Navigation("DossierEntries");
-
-                    b.Navigation("Feedback");
-
-                    b.Navigation("Hours");
-
-                    b.Navigation("Loas");
-
-                    b.Navigation("Warnings");
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }
