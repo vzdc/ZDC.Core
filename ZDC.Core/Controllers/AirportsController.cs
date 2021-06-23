@@ -39,6 +39,9 @@ namespace ZDC.Core.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid airport");
+            var airport = await _context.Airports.FindAsync(data.Id);
+            if (airport != null)
+                return NotFound($"Airport {data.Id} not found");
             data.Updated = DateTime.UtcNow;
             _context.Airports.Update(data);
             await _context.SaveChangesAsync();

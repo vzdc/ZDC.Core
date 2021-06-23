@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +40,12 @@ namespace ZDC.Core.Controllers
         [HttpPut]
         public async Task<ActionResult<BugReport>> PutBugReport([FromBody] BugReport data)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid bug report");
+            var bugReport = await _context.BugReports.FindAsync(data.Id);
+            if (bugReport != null)
+                return NotFound($"Bug report {data.Id} not found");
+            data.Updated = DateTime.UtcNow;
             _context.BugReports.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);
@@ -50,6 +58,22 @@ namespace ZDC.Core.Controllers
                 return BadRequest("Invalid bug report");
             await _context.BugReports.AddAsync(data);
             await _context.SaveChangesAsync();
+
+            var users = await _context.Users
+                .Where(
+                    x => x.Roles.Any(x => x.Name.Equals("ATM") || x.Name.Equals("DATM") ||
+                                          x.Name.Equals("TA") || x.Name.Equals("WM") || x.Name.Equals("AWM"))
+                ).ToListAsync();
+            foreach (var user in users)
+                await _context.Notifications.AddAsync(new Notification
+                {
+                    User = user,
+                    Link = $"/admin/bugreports/{data.Id}",
+                    Title = "New Bug Report"
+                });
+
+            await _context.SaveChangesAsync();
+
             return Ok(data);
         }
 

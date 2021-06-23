@@ -20,6 +20,7 @@ namespace ZDC.Core.Data
         public DbSet<Feedback> Feedback { get; set; }
         public DbSet<Hours> Hours { get; set; }
         public DbSet<Loa> Loas { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         public DbSet<OnlineController> OnlineControllers { get; set; }
         public DbSet<Ots> Ots { get; set; }
         public DbSet<Overflight> Overflights { get; set; }

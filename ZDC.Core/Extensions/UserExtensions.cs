@@ -11,22 +11,18 @@ namespace ZDC.Core.Extensions
     {
         public static async Task<User> GetUser(this ClaimsPrincipal user, ZdcContext context)
         {
-            var cid = user.Claims
+            int.TryParse(user.Claims
                 .FirstOrDefault(x => x.Type.Equals("cid", StringComparison.OrdinalIgnoreCase))?
-                .Value;
-            if (cid == null)
-                return null;
+                .Value, out var cid);
             var controller = await context.Users.FindAsync(cid);
             return controller;
         }
 
         public static async Task<bool> IsStaff(this ClaimsPrincipal user, ZdcContext context)
         {
-            var cid = user.Claims
+            int.TryParse(user.Claims
                 .FirstOrDefault(x => x.Type.Equals("cid", StringComparison.OrdinalIgnoreCase))?
-                .Value;
-            if (cid == null)
-                return false;
+                .Value, out var cid);
             var controller = await context.Users.FindAsync(cid);
             if (controller == null)
                 return false;
@@ -40,11 +36,9 @@ namespace ZDC.Core.Extensions
 
         public static async Task<bool> IsTrainingStaff(this ClaimsPrincipal user, ZdcContext context)
         {
-            var cid = user.Claims
+            int.TryParse(user.Claims
                 .FirstOrDefault(x => x.Type.Equals("cid", StringComparison.OrdinalIgnoreCase))?
-                .Value;
-            if (cid == null)
-                return false;
+                .Value, out var cid);
             var controller = await context.Users.FindAsync(cid);
             if (controller == null)
                 return false;
@@ -55,11 +49,9 @@ namespace ZDC.Core.Extensions
 
         public static async Task<bool> HasEventRegistration(this ClaimsPrincipal user, ZdcContext context, int id)
         {
-            var cid = user.Claims
+            int.TryParse(user.Claims
                 .FirstOrDefault(x => x.Type.Equals("cid", StringComparison.OrdinalIgnoreCase))?
-                .Value;
-            if (cid == null)
-                return false;
+                .Value, out var cid);
             var controller = await context.Users.FindAsync(cid);
             var registration = await context.EventRegistrations.FindAsync(id);
             if (controller == null || registration == null)

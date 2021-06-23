@@ -44,6 +44,9 @@ namespace ZDC.Core.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid event");
+            var @event = await _context.Events.FindAsync(data.Id);
+            if (@event != null)
+                return NotFound($"Event {data.Id} not found");
             data.Updated = DateTime.UtcNow;
             _context.Events.Update(data);
             await _context.SaveChangesAsync();
@@ -138,6 +141,10 @@ namespace ZDC.Core.Controllers
                 return BadRequest("Invalid event registration");
             if (!await User.HasEventRegistration(_context, data.Id) && !await User.IsStaff(_context))
                 return Unauthorized($"Cannot view event registration {data.Id}");
+            var registration = await _context.EventRegistrations.FindAsync(data.Id);
+            if (registration != null)
+                return NotFound($"Event registration {data.Id} not found");
+            data.Updated = DateTime.UtcNow;
             _context.EventRegistrations.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ZDC.Core.Auth;
@@ -62,6 +63,7 @@ namespace ZDC.Core.Controllers
             if (userDetails == null || !userDetails.Data.Oauth.ValidToken.Equals("true"))
                 return NotFound("User details invalid");
             var user = _context.Users
+                .Include(x => x.Roles)
                 .FirstOrDefault(x => x.Id == int.Parse(userDetails.Data.Cid));
             var claims = new List<Claim>
             {

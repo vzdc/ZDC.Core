@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZDC.Core.Data;
@@ -9,9 +10,10 @@ using ZDC.Core.Data;
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    partial class ZdcContextModelSnapshot : ModelSnapshot
+    [Migration("20210617232251_Roles")]
+    partial class Roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,6 +156,9 @@ namespace ZDC.Core.Migrations
                     b.Property<int>("Chesapeake")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("Ground")
                         .HasColumnType("integer");
 
@@ -168,6 +173,9 @@ namespace ZDC.Core.Migrations
 
                     b.Property<int>("Tower")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -225,6 +233,9 @@ namespace ZDC.Core.Migrations
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("integer");
@@ -483,20 +494,11 @@ namespace ZDC.Core.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<string>("Link")
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Title")
                         .HasColumnType("text");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("integer");
@@ -521,16 +523,18 @@ namespace ZDC.Core.Migrations
                     b.Property<string>("Frequency")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
                     b.Property<string>("Online")
                         .HasColumnType("text");
 
                     b.Property<string>("Position")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("OnlineControllers");
                 });
@@ -635,9 +639,6 @@ namespace ZDC.Core.Migrations
 
                     b.Property<string>("NameLong")
                         .HasColumnType("text");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -963,6 +964,15 @@ namespace ZDC.Core.Migrations
                 });
 
             modelBuilder.Entity("ZDC.Models.Notification", b =>
+                {
+                    b.HasOne("ZDC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZDC.Models.OnlineController", b =>
                 {
                     b.HasOne("ZDC.Models.User", "User")
                         .WithMany()

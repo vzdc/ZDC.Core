@@ -285,6 +285,86 @@ namespace ZDC.Core.Data
                 await context.Positions.AddRangeAsync(positions);
             }
 
+            if (!context.Roles.Any())
+            {
+                var roles = new List<Role>
+                {
+                    new()
+                    {
+                        Name = "ATM",
+                        NameLong = "Air Traffic Manager",
+                        Priority = 1
+                    },
+                    new()
+                    {
+                        Name = "DATM",
+                        NameLong = "Deputy Air Traffic Manager",
+                        Priority = 2
+                    },
+                    new()
+                    {
+                        Name = "TA",
+                        NameLong = "Training Administrator",
+                        Priority = 3
+                    },
+                    new()
+                    {
+                        Name = "WM",
+                        NameLong = "Webmaster",
+                        Priority = 4
+                    },
+                    new()
+                    {
+                        Name = "EC",
+                        NameLong = "Events Coordinator",
+                        Priority = 5
+                    },
+                    new()
+                    {
+                        Name = "FE",
+                        NameLong = "Facility Engineer",
+                        Priority = 6
+                    },
+                    new()
+                    {
+                        Name = "ATA",
+                        NameLong = "Assistant Training Administrator",
+                        Priority = 7
+                    },
+                    new()
+                    {
+                        Name = "AWM",
+                        NameLong = "Assistant Webmaster",
+                        Priority = 8
+                    },
+                    new()
+                    {
+                        Name = "AEC",
+                        NameLong = "Assistant Events Coordinator",
+                        Priority = 9
+                    },
+                    new()
+                    {
+                        Name = "AFE",
+                        NameLong = "Assistant Facility Engineer",
+                        Priority = 10
+                    },
+                    new()
+                    {
+                        Name = "INS",
+                        NameLong = "Instructor",
+                        Priority = 11
+                    },
+                    new()
+                    {
+                        Name = "MTR",
+                        NameLong = "Mentor",
+                        Priority = 12
+                    }
+                };
+                await context.Roles.AddRangeAsync(roles);
+            }
+
             await context.SaveChangesAsync();
         }
     }

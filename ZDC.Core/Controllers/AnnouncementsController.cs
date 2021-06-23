@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,10 @@ namespace ZDC.Core.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid announcement");
+            var announcement = await _context.Announcements.FindAsync(data.Id);
+            if (announcement != null)
+                return NotFound($"Announcement {data.Id} not found");
+            data.Updated = DateTime.UtcNow;
             _context.Announcements.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);
@@ -49,15 +54,13 @@ namespace ZDC.Core.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid announcement");
+            var user = await _context.Users.FindAsync(data.SubmitterId);
+            if (user == null)
+                return NotFound($"User {data.SubmitterId} not found");
+            data.Submitter = user;
             await _context.Announcements.AddAsync(data);
             await _context.SaveChangesAsync();
-
-            var user = await _context.Users.FindAsync(data.SubmitterId);
-            var announcement = await _context.Announcements.FindAsync(data.Id);
-            announcement.Submitter = user;
-
-            await _context.SaveChangesAsync();
-            return Ok(announcement);
+            return Ok(data);
         }
 
         //[Authorize(Roles = "ATM,DATM,TA,WM,FE,EC")]

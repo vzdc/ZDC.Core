@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZDC.Core.Data;
@@ -9,15 +10,31 @@ using ZDC.Core.Data;
 namespace ZDC.Core.Migrations
 {
     [DbContext(typeof(ZdcContext))]
-    partial class ZdcContextModelSnapshot : ModelSnapshot
+    [Migration("20210623020411_SetupRatings")]
+    partial class SetupRatings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+            modelBuilder.Entity("RatingUser", b =>
+                {
+                    b.Property<int>("RatingId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RatingId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RatingUser");
+                });
 
             modelBuilder.Entity("RoleUser", b =>
                 {
@@ -623,6 +640,21 @@ namespace ZDC.Core.Migrations
                     b.ToTable("Positions");
                 });
 
+            modelBuilder.Entity("ZDC.Models.Rating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("UserRating")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ratings");
+                });
+
             modelBuilder.Entity("ZDC.Models.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -814,9 +846,6 @@ namespace ZDC.Core.Migrations
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("UserRating")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("Visitor")
                         .HasColumnType("boolean");
 
@@ -863,6 +892,21 @@ namespace ZDC.Core.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Warnings");
+                });
+
+            modelBuilder.Entity("RatingUser", b =>
+                {
+                    b.HasOne("ZDC.Models.Rating", null)
+                        .WithMany()
+                        .HasForeignKey("RatingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZDC.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RoleUser", b =>

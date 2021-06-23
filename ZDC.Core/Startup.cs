@@ -1,4 +1,5 @@
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Prometheus;
 using ZDC.Core.Data;
+using ZDC.Core.Dtos;
+using ZDC.Core.Services;
+using ZDC.Models;
 
 namespace ZDC.Core
 {
@@ -25,11 +29,19 @@ namespace ZDC.Core
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore); ;
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "ZDC.Core", Version = "v1"}); });
 
             services.AddDbContext<ZdcContext>(options =>
                 options.UseNpgsql(Configuration.GetValue<string>("ConnectionString")));
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new Dtos.Mapper());
+            });
+
+            var mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddAuthentication(options =>
                 {
@@ -79,6 +91,7 @@ namespace ZDC.Core
                     }
                 });
             });
+            services.AddTransient<NotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
