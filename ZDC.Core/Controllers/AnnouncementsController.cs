@@ -22,14 +22,18 @@ namespace ZDC.Core.Controllers
         [HttpGet]
         public async Task<ActionResult<IList<Announcement>>> GetAnnouncements()
         {
-            var announcements = await _context.Announcements.ToListAsync();
+            var announcements = await _context.Announcements
+                .Include(x => x.Submitter)
+                .ToListAsync();
             return Ok(announcements);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Announcement>> GetAnnouncement(int id)
         {
-            var announcement = await _context.Announcements.FindAsync(id);
+            var announcement = await _context.Announcements
+                .Include(x => x.Submitter)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return announcement != null ? Ok(announcement) : NotFound($"Announcement {id} not found");
         }
 
