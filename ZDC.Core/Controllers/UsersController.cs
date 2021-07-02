@@ -47,8 +47,7 @@ namespace ZDC.Core.Controllers
                 month = DateTime.UtcNow.Month;
             }
 
-            var users = await _context.Users.Where(x => x.Status != UserStatus.Removed)
-                .OrderBy(x => x.LastName).ToListAsync();
+            var users = await _context.Users.Where(x => x.Status != UserStatus.Removed).ToListAsync();
             var stats = _mapper.Map<IList<User>, IList<StatsDto>>(users);
             foreach (var entry in stats)
             {
@@ -63,7 +62,7 @@ namespace ZDC.Core.Controllers
                 }
             }
 
-            return Ok(stats);
+            return Ok(stats.OrderByDescending(x => x.Hours?.TotalHours));
         }
 
         [HttpGet("{id}")]
