@@ -10,6 +10,9 @@ namespace ZDC.Core.Dtos
             CreateMap<User, UserDto>();
             CreateMap<User, UserStaffDto>();
             CreateMap<Role, RoleDto>();
+            CreateMap<User, StatsDto>()
+                .ForMember(x => x.Hours, opt => opt.Ignore());
+            CreateMap<Hours, HoursDto>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -25,7 +26,7 @@ namespace ZDC.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<User>>> GetUsers()
+        public async Task<ActionResult<IList<UserDto>>> GetUsers()
         {
             var users = await _context.Users
                 .Include(x => x.Certifications)
@@ -35,6 +36,34 @@ namespace ZDC.Core.Controllers
             if (await User.IsStaff(_context) || await User.IsTrainingStaff(_context))
                 return Ok(_mapper.Map<IList<User>, IList<UserStaffDto>>(users));
             return Ok(_mapper.Map<IList<User>, IList<UserDto>>(users));
+        }
+
+        [HttpGet("stats")]
+        public async Task<ActionResult<IList<StatsDto>>> GetStats(int year = 0, int month = 0)
+        {
+            if (year == 0 || month == 0)
+            {
+                year = DateTime.UtcNow.Year;
+                month = DateTime.UtcNow.Month;
+            }
+
+            var users = await _context.Users.Where(x => x.Status != UserStatus.Removed)
+                .OrderBy(x => x.LastName).ToListAsync();
+            var stats = _mapper.Map<IList<User>, IList<StatsDto>>(users);
+            foreach (var entry in stats)
+            {
+                var hours = await _context.Hours
+                    .Where(x => x.User.Id == entry.Id)
+                    .FirstOrDefaultAsync(x => x.Year == year && x.Month == month);
+                if (hours != null)
+                {
+                    var time = TimeSpan.FromHours(hours.TotalHours);
+                    Console.Write($"{time.Hours}h {time.Minutes}m");
+                    entry.Hours = _mapper.Map<Hours, HoursDto>(hours);
+                }
+            }
+
+            return Ok(stats);
         }
 
         [HttpGet("{id}")]
