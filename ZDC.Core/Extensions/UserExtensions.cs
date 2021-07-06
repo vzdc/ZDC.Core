@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
 using ZDC.Models;
 
@@ -23,7 +24,8 @@ namespace ZDC.Core.Extensions
             int.TryParse(user.Claims
                 .FirstOrDefault(x => x.Type.Equals("cid", StringComparison.OrdinalIgnoreCase))?
                 .Value, out var cid);
-            var controller = await context.Users.FindAsync(cid);
+            var controller = await context.Users
+                .Include(x => x.Roles).FirstOrDefaultAsync(x => x.Id == cid);
             if (controller == null)
                 return false;
             var staff = controller.Roles
@@ -39,7 +41,8 @@ namespace ZDC.Core.Extensions
             int.TryParse(user.Claims
                 .FirstOrDefault(x => x.Type.Equals("cid", StringComparison.OrdinalIgnoreCase))?
                 .Value, out var cid);
-            var controller = await context.Users.FindAsync(cid);
+            var controller = await context.Users
+                .Include(x => x.Roles).FirstOrDefaultAsync(x => x.Id == cid);
             if (controller == null)
                 return false;
             var training = controller.Roles

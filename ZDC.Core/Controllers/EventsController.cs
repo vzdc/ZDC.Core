@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
+using ZDC.Core.Dtos;
 using ZDC.Core.Extensions;
+using ZDC.Core.Services;
 using ZDC.Models;
 
 namespace ZDC.Core.Controllers
@@ -14,18 +17,22 @@ namespace ZDC.Core.Controllers
     [ApiController]
     public class EventsController : Controller
     {
+        private readonly AzureService _azureService;
         private readonly ZdcContext _context;
+        private readonly IMapper _mapper;
 
-        public EventsController(ZdcContext content)
+        public EventsController(ZdcContext content, AzureService azureService, IMapper mapper)
         {
             _context = content;
+            _azureService = azureService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IList<Event>>> GetEvents()
         {
             var events = await _context.Events
-                .Where(x => x.Open)
+                .Where(x => x.Open).OrderBy(x => x.Start)
                 .ToListAsync();
             return Ok(events);
         }
@@ -34,8 +41,18 @@ namespace ZDC.Core.Controllers
         [HttpGet("All")]
         public async Task<ActionResult<IList<Event>>> GetAllEvents()
         {
-            var events = await _context.Events.ToListAsync();
+            var events = await _context.Events
+                .OrderBy(x => x.Start).ToListAsync();
             return Ok(events);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Event>> GetEvent(int id)
+        {
+            var @event = await _context.Events.FindAsync(id);
+            if (!@event.Open && !await User.IsStaff(_context))
+                return NotFound($"Event {id} not found");
+            return Ok(@event);
         }
 
         //[Authorize(Roles = "ATM,DATM,TA,WM,EC,AEC")]
@@ -48,6 +65,12 @@ namespace ZDC.Core.Controllers
             if (@event != null)
                 return NotFound($"Event {data.Id} not found");
             data.Updated = DateTime.UtcNow;
+            if (data.FormFile != null)
+            {
+                await _azureService.DeleteFile(data.Url);
+                data.Url = await _azureService.UploadFile(data.FormFile);
+            }
+
             _context.Events.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);
@@ -59,6 +82,8 @@ namespace ZDC.Core.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid event");
+            if (data.FormFile != null)
+                data.Url = await _azureService.UploadFile(data.FormFile);
             await _context.Events.AddAsync(data);
             await _context.SaveChangesAsync();
             return Ok(data);
@@ -114,22 +139,26 @@ namespace ZDC.Core.Controllers
             return Ok(position);
         }
 
+        //[Authorize]
         [HttpGet("Registrations")]
         public async Task<ActionResult<IList<EventRegistration>>> GetEventRegistrations()
         {
             var registrations = await _context.EventRegistrations.ToListAsync();
+            if (!await User.IsStaff(_context))
+                return Ok(_mapper.Map<IList<EventRegistration>, IList<EventRegistrationDto>>(registrations));
             return Ok(registrations);
         }
 
         //[Authorize]
-        [HttpGet("Registrations/{id}")]
+        [HttpGet("Registrations/{id}/User")]
         public async Task<ActionResult<EventRegistration>> GetEventRegistration(int id)
         {
-            var registration = await _context.EventRegistrations.FindAsync(id);
-            if (registration == null)
-                NotFound($"Event registration {id} not found");
-            if (!await User.HasEventRegistration(_context, id) && !await User.IsStaff(_context))
-                return Unauthorized($"Cannot view event registration {id}");
+            var @event = await _context.Events.FindAsync(id);
+            if (@event == null)
+                NotFound($"Event {id} not found");
+            var user = await User.GetUser(_context);
+            var registration = await _context.EventRegistrations
+                .FirstOrDefaultAsync(x => x.User == user);
             return Ok(registration);
         }
 
@@ -140,7 +169,7 @@ namespace ZDC.Core.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Invalid event registration");
             if (!await User.HasEventRegistration(_context, data.Id) && !await User.IsStaff(_context))
-                return Unauthorized($"Cannot view event registration {data.Id}");
+                return Unauthorized($"Cannot update event registration {data.Id}");
             var registration = await _context.EventRegistrations.FindAsync(data.Id);
             if (registration != null)
                 return NotFound($"Event registration {data.Id} not found");

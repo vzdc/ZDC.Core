@@ -18,6 +18,7 @@ namespace ZDC.Core.Data
         public DbSet<EventRegistration> EventRegistrations { get; set; }
         public DbSet<EventPositionPreset> EventPositionPresets { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
+        public DbSet<File> Files { get; set; }
         public DbSet<Hours> Hours { get; set; }
         public DbSet<Loa> Loas { get; set; }
         public DbSet<Notification> Notifications { get; set; }

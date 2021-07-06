@@ -55,11 +55,7 @@ namespace ZDC.Core.Controllers
                     .Where(x => x.User.Id == entry.Id)
                     .FirstOrDefaultAsync(x => x.Year == year && x.Month == month);
                 if (hours != null)
-                {
-                    var time = TimeSpan.FromHours(hours.TotalHours);
-                    Console.Write($"{time.Hours}h {time.Minutes}m");
                     entry.Hours = _mapper.Map<Hours, HoursDto>(hours);
-                }
             }
 
             return Ok(stats.OrderByDescending(x => x.Hours?.TotalHours));

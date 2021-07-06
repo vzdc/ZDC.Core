@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZDC.Core.Data;
+using ZDC.Core.Dtos;
+using ZDC.Core.Extensions;
 using ZDC.Models;
 
 namespace ZDC.Core.Controllers
@@ -13,10 +17,12 @@ namespace ZDC.Core.Controllers
     public class AnnouncementsController : Controller
     {
         private readonly ZdcContext _context;
+        private readonly IMapper _mapper;
 
-        public AnnouncementsController(ZdcContext content)
+        public AnnouncementsController(ZdcContext content, IMapper mapper)
         {
             _context = content;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -24,10 +30,13 @@ namespace ZDC.Core.Controllers
         {
             var announcements = await _context.Announcements
                 .Include(x => x.Submitter)
-                .ToListAsync();
+                .OrderBy(x => x.Updated).ToListAsync();
+            if (!await User.IsStaff(_context))
+                return Ok(_mapper.Map<IList<Announcement>, IList<AnnouncementDto>>(announcements));
             return Ok(announcements);
         }
 
+        //[Authorize(Roles = "ATM,DATM,TA,WM,FE,EC")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Announcement>> GetAnnouncement(int id)
         {
