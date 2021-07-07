@@ -55,7 +55,7 @@ namespace ZDC.Core.Controllers
             var announcement = await _context.Announcements.FindAsync(data.Id);
             if (announcement != null)
                 return NotFound($"Announcement {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.Announcements.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

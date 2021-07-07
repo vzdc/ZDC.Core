@@ -8,9 +8,9 @@ namespace ZDC.Core.Dtos
         public int Id { get; set; }
         public UserDto User { get; set; }
         public Event Event { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Start { get; set; }
+        public DateTimeOffset End { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Updated { get; set; }
     }
 }

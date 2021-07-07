@@ -47,7 +47,7 @@ namespace ZDC.Core.Controllers
             var request = await _context.StaffingRequests.FindAsync(data.Id);
             if (request == null)
                 return NotFound($"Staffing request {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.StaffingRequests.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

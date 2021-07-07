@@ -52,7 +52,7 @@ namespace ZDC.Core.Controllers
             var feedback = await _context.Feedback.FindAsync(data.Id);
             if (feedback != null)
                 return NotFound($"Feedback {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.Feedback.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

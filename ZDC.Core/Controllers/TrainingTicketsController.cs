@@ -55,7 +55,7 @@ namespace ZDC.Core.Controllers
             if (trainer == null)
                 return NotFound($"Trainer {data.TrainerId} not found");
             data.Student = student;
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.TrainingTickets.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

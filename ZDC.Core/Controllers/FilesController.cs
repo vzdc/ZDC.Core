@@ -56,7 +56,7 @@ namespace ZDC.Core.Controllers
             var file = await _context.Files.FindAsync(data.Id);
             if (file == null)
                 return NotFound($"File {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             if (data.FormFile != null)
             {
                 await _azureService.DeleteFile(data.Url);

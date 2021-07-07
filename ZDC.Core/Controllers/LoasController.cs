@@ -52,7 +52,7 @@ namespace ZDC.Core.Controllers
             var loa = await _context.Loas.FindAsync(data.Id);
             if (loa != null)
                 return NotFound($"LOA {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.Loas.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

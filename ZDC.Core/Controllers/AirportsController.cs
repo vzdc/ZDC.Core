@@ -42,7 +42,7 @@ namespace ZDC.Core.Controllers
             var airport = await _context.Airports.FindAsync(data.Id);
             if (airport != null)
                 return NotFound($"Airport {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.Airports.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

@@ -50,7 +50,7 @@ namespace ZDC.Core.Controllers
         public async Task<ActionResult<Event>> GetEvent(int id)
         {
             var @event = await _context.Events.FindAsync(id);
-            if (!@event.Open && !await User.IsStaff(_context))
+            if (@event == null || !@event.Open && !await User.IsStaff(_context))
                 return NotFound($"Event {id} not found");
             return Ok(@event);
         }
@@ -64,7 +64,7 @@ namespace ZDC.Core.Controllers
             var @event = await _context.Events.FindAsync(data.Id);
             if (@event != null)
                 return NotFound($"Event {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             if (data.FormFile != null)
             {
                 await _azureService.DeleteFile(data.Url);
@@ -173,7 +173,7 @@ namespace ZDC.Core.Controllers
             var registration = await _context.EventRegistrations.FindAsync(data.Id);
             if (registration != null)
                 return NotFound($"Event registration {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.EventRegistrations.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

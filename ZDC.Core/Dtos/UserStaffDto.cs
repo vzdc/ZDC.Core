@@ -47,8 +47,8 @@ namespace ZDC.Core.Dtos
         public bool Currency { get; set; }
         public string VisitorFrom { get; set; }
         public UserStatus Status { get; set; }
-        public DateTime Joined { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Joined { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Updated { get; set; }
     }
 }

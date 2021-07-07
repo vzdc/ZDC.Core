@@ -60,7 +60,7 @@ namespace ZDC.Core.Controllers
             if (recommendedBy == null)
                 return NotFound($"Recommender {data.RecommendedById} not found");
             data.RecommendedBy = recommendedBy;
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.Ots.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

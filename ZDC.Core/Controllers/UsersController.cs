@@ -43,8 +43,8 @@ namespace ZDC.Core.Controllers
         {
             if (year == 0 || month == 0)
             {
-                year = DateTime.UtcNow.Year;
-                month = DateTime.UtcNow.Month;
+                year = DateTimeOffset.UtcNow.Year;
+                month = DateTimeOffset.UtcNow.Month;
             }
 
             var users = await _context.Users.Where(x => x.Status != UserStatus.Removed).ToListAsync();

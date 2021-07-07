@@ -8,7 +8,7 @@ namespace ZDC.Core.Dtos
         public UserDto Submitter { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Updated { get; set; }
     }
 }

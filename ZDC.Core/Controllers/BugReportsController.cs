@@ -45,7 +45,7 @@ namespace ZDC.Core.Controllers
             var bugReport = await _context.BugReports.FindAsync(data.Id);
             if (bugReport != null)
                 return NotFound($"Bug report {data.Id} not found");
-            data.Updated = DateTime.UtcNow;
+            data.Updated = DateTimeOffset.UtcNow;
             _context.BugReports.Update(data);
             await _context.SaveChangesAsync();
             return Ok(data);

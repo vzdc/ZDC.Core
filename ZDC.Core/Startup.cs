@@ -31,7 +31,6 @@ namespace ZDC.Core
         {
             services.AddControllers().AddNewtonsoftJson(x =>
                 x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-            ;
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "ZDC.Core", Version = "v1"}); });
 
             services.AddDbContext<ZdcContext>(options =>
@@ -41,6 +40,7 @@ namespace ZDC.Core
 
             var mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
+
 
             services.AddAuthentication(options =>
                 {
