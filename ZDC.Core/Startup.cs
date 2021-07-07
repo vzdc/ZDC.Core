@@ -105,6 +105,10 @@ namespace ZDC.Core
             }
 
             app.UseMetricServer();
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
